@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "使用 jekyll + Github 來建立一個部落格。"
-date:   2018-09-10 13:30:38 +0800
+title:  "使用 jekyll + Github 來建立一個部落格"
+date:   2018-09-10 14:33:38 +0800
 categories: jekyll Github
 tags: [jekyll, Github]
 ---
@@ -47,7 +47,7 @@ my-awesome-site
 
 新增文章只需要把 markdown 檔放到`_posts`就可以了。
 
-不過必須遵守年-月-份-文章網址名稱(英文).markdown的檔名規範才行，不然會失效喔。
+不過必須遵守年-月-份-文章網址名稱(需英文).md的檔名規範才行，不然會失效喔。
 
 除此之外，還需要去 _config.yml 設定你的相關資訊，改成自己的唷。
 
