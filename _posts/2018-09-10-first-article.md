@@ -2,9 +2,9 @@
 layout: post
 title:  "使用 jekyll + Github 來建立一個部落格"
 date:   2018-09-10 14:33:38 +0800
-categories: jekyll Github
 tags: [jekyll, Github]
 ---
+
 使用 jekyll + Github 來建立一個部落格。
 
 這邊會大致介紹如何操作。(以下操作指令都在終端機進行)
