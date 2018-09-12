@@ -69,7 +69,7 @@ my-awesome-site
 
 上傳後便可以在 account.github.io 看到自己的 blog 了。
 
-參考文章
+參考連結
 <br>[利用Jekyll與Github Page建立自己的Dev-Blog][jekyll-GithubPage]
 <br>[Jekyll 介紹][what-is-jekyll]
 
