@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>在 Heroku 上透過 Docker 部屬 .NET Core 應用程式 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/NET/" rel="tag">.NET</a><a class="post-tag-link" href="/tags/Docker/" rel="tag">Docker</a></div><div class="post-time">2020-05-12</div></div></div><div class="container post-header"><h1>在 Heroku 上透過 Docker 部屬 .NET Core 應用程式</h1></div><div class="container post-content"><p>本篇將會教你如何透過 Docker 部屬 .NET Core 應用程式到 Heroku 上，內容並不包含 Heroku 的註冊與使用、Docker 使用方式。</p>
+<p>首先建立一個 ASP.NET Core Web Application 專案，<strong>在選擇範本時請開啟 Docker，並且將 Docker Image 環境設定為 Linux</strong>，即便你是使用 Windows 來開發應用程式，這邊以 API 範本專案為例。</p>
+<p><img src="/images/2020-05-12/need-select-linux.jpg" alt="將 Docker Image 環境設定為 Linux，即便你是使用 Windows 來開發應用程式"></p>
+<p>並將範本建立的 DockerFile 修改一下，此示範專案名稱為 HerokuDockerDeployment，<strong>請改成你建立的專案名稱</strong>。這邊 Markdown 似乎有跑板問題，建議複製到其他地方察看。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> mcr.microsoft.com/dotnet/core/aspnet:<span class="number">3.1</span>-buster-slim AS base</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /app</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">80</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">443</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> mcr.microsoft.com/dotnet/core/sdk:<span class="number">3.1</span>-buster AS build</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /src</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> [<span class="string">"HerokuDockerDeployment.csproj"</span>, <span class="string">"HerokuDockerDeployment/"</span>]</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> dotnet restore <span class="string">"HerokuDockerDeployment/HerokuDockerDeployment.csproj"</span></span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> <span class="string">"/src/HerokuDockerDeployment"</span></span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> . .</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> dotnet build <span class="string">"HerokuDockerDeployment.csproj"</span> -c Release -o /app/build</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> build AS publish</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> dotnet publish <span class="string">"HerokuDockerDeployment.csproj"</span> -c Release -o /app/publish</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">FROM</span> base AS final</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /app</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> --from=publish /app/publish .</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> ASPNETCORE_URLS=http://*:<span class="variable">$PORT</span> dotnet HerokuDockerDeployment.dll</span></span><br></pre></td></tr></table></figure>
+
+<p>開啟 <code>PowerShell</code> 並將<strong>目錄切換至專案所在的位置</strong>(<code>~/source/repos/&lt;solution-name&gt;/&lt;project-name&gt;</code>)。</p>
+<p><strong>在將 .NET Core app 新增到 Docker Image 前，必須先將它發佈一次。</strong></p>
+<p><code>dotnet publish -c Release</code></p>
+<p>建立 Docker Image。</p>
+<p><code>docker build -t &lt;docker-image-name&gt; .</code></p>
+<p>透過 tag 指令來將 Docker Image 附加到 Heroku 的 Target Image。</p>
+<p><code>docker tag &lt;docker-image-name&gt; registry.heroku.com/&lt;heroku-app-name&gt;/web</code></p>
+<p>接下來需使用 <a href="https://devcenter.heroku.com/articles/heroku-cli" target="_blank" rel="noopener">Heroku CLI</a> 來進行 Heroku 的佈署，若沒有安裝請點選連結到官網下載安裝。</p>
+<p>登入 Heroku 且登入 Container 註冊表。</p>
+<p><code>heroku login</code><br><code>heroku container:login</code></p>
+<p>建立 Docker Image 並推到 Container 註冊表上。</p>
+<p><code>heroku container:push web -a &lt;heroku-app-name&gt;</code></p>
+<p>上述流程都成功後即可發佈。</p>
+<p><code>heroku container:release web -a &lt;heroku-app-name&gt;</code></p>
+<p>這樣就完成在 Heroku 上部屬 .NET Core 應用程式，開啟 APP 來確認是否有正確運作。</p>
+<p>後續換版只需要重複以下行為即可，別忘了將<strong>目錄切換至專案所在的位置</strong>(<code>~/source/repos/&lt;solution-name&gt;/&lt;project-name&gt;</code>)。</p>
+<p><code>heroku container:login</code><br><code>heroku container:push web -a &lt;heroku-app-name&gt;</code><br><code>heroku container:release web -a &lt;heroku-app-name&gt;</code></p>
+<p>參考資料<br><a href="https://jakubwajs.wordpress.com/2020/01/31/deploying-asp-net-core-3-1-web-api-to-heroku-with-docker/" target="_blank" rel="noopener">Deploy ASP.NET Core 3.1 Web API to Heroku with Docker – Jakub Wajs</a><br><a href="https://docs.microsoft.com/zh-tw/dotnet/core/docker/build-container" target="_blank" rel="noopener">使用 Docker 教學課程將應用程式容器化 - .NET Core | Microsoft Docs</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/05/12/2020-05-12-deploy-dotnet-core-to-heroku/';
+var disqus_title = '在 Heroku 上透過 Docker 部屬 .NET Core 應用程式';
+var disqus_url = 'http://yoursite.com/2020/05/12/2020-05-12-deploy-dotnet-core-to-heroku/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

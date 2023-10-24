@@ -1,0 +1,109 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 11 表單魔術 - 內建元件道具 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-26</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 11 表單魔術 - 內建元件道具</h1></div><div class="container post-content"><p>提到表單如果沒有使用到表單元件，那還算有介紹到表單嗎？而在 Blazor 中我們又該如何來操作表單元件？今天將帶大家認識 Blazor 提供的內建表單元件。</p>
+<p>如果不熟悉表單元件是什麼，建議先自行去看 HTML 表單元件，這邊不針對 HTML 做講解。</p>
+<hr>
+<p>Blazor 提供的內建表單元件可以用來接收及驗證使用者輸入，且當輸入變更和提交表單等事件發生時，也會觸發驗證，可以說是相當好用，在簡單情境下幾乎直接使用就好。</p>
+<table>
+<thead>
+<tr>
+<th align="left">元件</th>
+<th align="left">呈現為</th>
+<th align="center">可使用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">InputText</td>
+<td align="left"><code>&lt;input&gt;</code></td>
+<td align="center">v</td>
+</tr>
+<tr>
+<td align="left">InputNumber&lt;TValue&gt;</td>
+<td align="left"><code>&lt;input type=&quot;number&quot;&gt;</code></td>
+<td align="center">v</td>
+</tr>
+<tr>
+<td align="left">InputCheckbox</td>
+<td align="left"><code>&lt;input type=&quot;checkbox&quot;&gt;</code></td>
+<td align="center">v</td>
+</tr>
+<tr>
+<td align="left">InputDate&lt;TValue&gt;</td>
+<td align="left"><code>&lt;input type=&quot;date&quot;&gt;</code></td>
+<td align="center">v</td>
+</tr>
+<tr>
+<td align="left">InputTextArea</td>
+<td align="left"><code>&lt;textarea&gt;</code></td>
+<td align="center">v</td>
+</tr>
+<tr>
+<td align="left">InputSelect&lt;TValue&gt;</td>
+<td align="left"><code>&lt;select&gt;</code></td>
+<td align="center">v</td>
+</tr>
+<tr>
+<td align="left">InputRadio</td>
+<td align="left"><code>&lt;input type=&quot;radio&quot;&gt;</code></td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">InputRadioGroup</td>
+<td align="left"><code>&lt;input type=&quot;radio&quot;&gt;</code></td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="left">InputFile</td>
+<td align="left"><code>&lt;input type=&quot;file&quot;&gt;</code></td>
+<td align="center">x</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>這邊列的可使用是指本系列文的版本有提供，不可使用的元件將在 <code>.Net 5</code> 及後續版本中提供，這邊僅提及不介紹。</p>
+</blockquote>
+<p>而以上元件都是繼承於 <code>InputBase&lt;TValue&gt;</code> 的實作，下面將介紹可使用元件的個別用途，與元件自有的額外屬性，而基類將會在<strong>客製化元件</strong>時再詳細說明。</p>
+<ul>
+<li><p><strong><code>InputText</code></strong> - 字串輸入元件。</p>
+</li>
+<li><p><strong><code>InputNumber\&lt;TValue\&gt;</code></strong> - 數字輸入元件，使用時綁定的屬性一定要為數字型別 <code>Int32</code>, <code>Int64</code>, <code>Single</code>, <code>Double</code> 與 <code>Decimal</code> 型別，否則將會在執行時期錯誤。<br>除此之外也提供 <code>ParsingErrorMessage</code> 來設置轉換失敗的錯誤訊息，因為 <code>input type=&quot;number&quot;</code> 本來就會限制按鍵行為，所以可以想成是屬性值超過型別範圍的錯誤訊息。</p>
+</li>
+<li><p><strong><code>InputCheckbox</code></strong> - 布林輸入元件，也就是核取方塊。</p>
+</li>
+<li><p><strong><code>InputDate\&lt;TValue\&gt;</code></strong> - 日期輸入元件，使用時綁定的屬性一定要為日期型別 <code>DateTime</code> 或者 <code>DateTimeOffset</code>，否則一樣會抱錯。也提供 <code>ParsingErrorMessage</code> 屬性。</p>
+</li>
+<li><p><strong><code>InputTextArea</code></strong> - 字串多行輸入元件。</p>
+</li>
+</ul>
+<p>以上的元件使用方式都差不多，就以 <code>InputNumber</code> 為範例：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;InputNumber @bind-Value=<span class="string">"user.Age"</span> ParsingErrorMessage=<span class="string">"該數字超過系統限制！"</span> /&gt;</span><br></pre></td></tr></table></figure>
+
+<p>透過 <code>@bind-Value</code> 來綁定對象，也就是資料繫結，將會在 <strong>資料繫結與事件處理</strong> 時再詳細說明。</p>
+<ul>
+<li><strong><code>InputSelect&lt;TValue&gt;</code></strong> - 下拉式選單元件，需搭配 <code>option</code> 標籤來表示選項，所以使用方法就有別於上面了，以下範例是針對 <code>Enum</code> 內容來產生下拉式選單：</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;InputSelect @bind-Value=<span class="string">"user.UserType"</span>&gt;</span><br><span class="line">  @<span class="keyword">foreach</span> (<span class="keyword">var</span> <span class="keyword">value</span> <span class="keyword">in</span> Enum.GetValues(<span class="keyword">typeof</span>(UserType)))</span><br><span class="line">  &#123;</span><br><span class="line">    &lt;option&gt;@<span class="keyword">value</span>&lt;/option&gt;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/InputSelect&gt;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，也提供 <code>ChildContent</code> 來設定要被渲染的子元素，在 Blazor 中大多元件如果有跟子元件互動，基本都會提供 <code>ChildContent</code> 屬性來設定，而 <code>ChildContext</code> 將會在 <strong>樣板化元件</strong> 時再詳細說明。</p>
+<hr>
+<p>以上就是內建表單元件的基本介紹，若想看使用範例，可以直接參考昨天的範例程式碼。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/forms-validation?view=aspnetcore-3.1#built-in-forms-components" target="_blank" rel="noopener">內建表單元件</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/26/2020-09-26-learn-blazor-in-30-days-11/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 11 表單魔術 - 內建元件道具';
+var disqus_url = 'http://yoursite.com/2020/09/26/2020-09-26-learn-blazor-in-30-days-11/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>.NET 後端起手式 30天認識 C# - Day 20 泛型集合類別(二) | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/2019-iT-%E9%82%A6%E5%B9%AB%E5%BF%99%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">2019 iT 邦幫忙鐵人賽</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2018-10-30</div></div></div><div class="container post-header"><h1>.NET 後端起手式 30天認識 C# - Day 20 泛型集合類別(二)</h1></div><div class="container post-content"><h2 id="Day-20-泛型集合類別-二"><a href="#Day-20-泛型集合類別-二" class="headerlink" title="Day 20 泛型集合類別(二)"></a>Day 20 泛型集合類別(二)</h2><h3 id="泛型集合類別"><a href="#泛型集合類別" class="headerlink" title="泛型集合類別"></a>泛型集合類別</h3><p>接續昨天的話題我們繼續。</p>
+<h3 id="Stack-lt-T-gt"><a href="#Stack-lt-T-gt" class="headerlink" title="Stack&lt;T&gt;"></a>Stack&lt;T&gt;</h3><p>堆疊類型，設計成後入先出的集合。</p>
+<p><img src="/images/2018-10-30/01.png" alt="/images/2018-10-30/01.png"></p>
+<p>初始化上圖的 Stack 我們先</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> stack = <span class="keyword">new</span> Stack&lt;<span class="keyword">string</span>&gt; ();</span><br><span class="line">stack.Push (<span class="string">"Mio"</span>);</span><br><span class="line">stack.Push (<span class="string">"Miffy"</span>);</span><br><span class="line">stack.Push (<span class="string">"Lulu"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>由於 Stack 沒有 Add 方法，所以不能像前兩個一樣直接賦值。</p>
+<p>上方表示新增元素 Push ()</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stack.Push (<span class="string">"Lulu"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>下方表示取出元素 Pop ()</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stack.Pop ();</span><br></pre></td></tr></table></figure>
+
+<p>根據圖片我們可以更加了解如何使用 Stack，而上述兩種方法都會對 Stack 的元素產生影響，如果要查詢元素時，我們可以使用 Peek () 來確認最上面的元素，也可以使用 Contains () 來確認適合有符合的元素，當然要拿元素出來，還是要根據規則一個一個吐出。</p>
+<h3 id="Queue-lt-T-gt"><a href="#Queue-lt-T-gt" class="headerlink" title="Queue&lt;T&gt;"></a>Queue&lt;T&gt;</h3><p>佇列類型，設計成先入先出的集合。</p>
+<p><img src="/images/2018-10-30/02.png" alt="/images/2018-10-30/02.png"></p>
+<p>一樣初始化上圖的 Queue</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> queue = <span class="keyword">new</span> Queue&lt;<span class="keyword">string</span>&gt; ();</span><br><span class="line">queue.Enqueue (<span class="string">"Mio"</span>);</span><br><span class="line">queue.Enqueue (<span class="string">"Miffy"</span>);</span><br><span class="line">queue.Enqueue (<span class="string">"Lulu"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>Queue 一樣沒有 Add 方法。</p>
+<p>上方表示新增元素 Enqueue ()</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">queue.Enqueue (<span class="string">"Lulu"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>下方表示取出元素 Dequeue ()</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">queue.Dequeue ();</span><br></pre></td></tr></table></figure>
+
+<p>上述兩種方法一樣都會對 Queue 的元素產生影響，查詢的方法與 Stack 一樣。</p>
+<h3 id="一些小結論"><a href="#一些小結論" class="headerlink" title="一些小結論"></a>一些小結論</h3><p>簡單介紹四個常用的集合類別，這邊簡單的說一下個人的使用時機，有明確的對照行為，並且要求 Key 值不能重複時，可以使用 Dictionary。而今天介紹的這兩個則是以需求為主，除非內容需以加入順序排列，否則一般不會考慮。不知道用啥就是使用 List。當然只是個人感想而已。</p>
+<p>雖然沒有介紹裝箱拆箱，但因為裝箱拆箱的原因，在撰寫程式碼時，建議優先選擇泛型版本，有些集合允許非泛型版本(存放於<code>System.Collections</code>)，在編譯時也能強制型別檢查，所以泛型版本可以說是比較快也比較安全。</p>
+<p>參考連結<br><a href="https://hk.saowen.com/a/c1840f6421e9b4c106addd808ab5fdf8cf0938f30979ba1b085b6523061632ae" target="_blank" rel="noopener">C# 裝箱和拆箱[整理](轉) - 掃文資訊</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/10/30/2018-10-30-learn-csharp-in-30-days-20/';
+var disqus_title = '.NET 後端起手式 30天認識 C# - Day 20 泛型集合類別(二)';
+var disqus_url = 'http://yoursite.com/2018/10/30/2018-10-30-learn-csharp-in-30-days-20/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

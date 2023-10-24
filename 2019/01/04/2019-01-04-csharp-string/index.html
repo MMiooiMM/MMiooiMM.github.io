@@ -1,0 +1,48 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>C# String 小知識 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2019-01-04</div></div></div><div class="container post-header"><h1>C# String 小知識</h1></div><div class="container post-content"><p>這邊記錄一下關於 String 的一些小知識</p>
+<h3 id="基本介紹"><a href="#基本介紹" class="headerlink" title="基本介紹"></a>基本介紹</h3><p><strong>字串是用來代表文字字元的循序集合。</strong></p>
+<p>String 物件在記憶體中的大小上限是 2 GB 的資料或大約 1 億個字元。</p>
+<p>String 物件是循序集合 System.Char 物件來代表的字串，而 System.Char 物件會對應至的 utf-16 字碼單位。</p>
+<p>也因為 String 物件是循序集合的內容，其 System.Char 物件和值是不可變 （亦即，<strong>String 是唯讀</strong>），一旦建立後便無法修改其值，所以任何操作 String 的行為實際上是會傳回新 String。</p>
+<p>舉個例子：字串相加其實是字串處理完畢後重新指派，而非原字串拼接新字串。</p>
+<p>如果需要以拼接的方式連接字串，則可以使用 StringBuilder。</p>
+<h3 id="StringBuilder"><a href="#StringBuilder" class="headerlink" title="StringBuilder"></a>StringBuilder</h3><p>StringBuilder 是可變動的物件，當您串連、附加或刪除從字串的子字串時，作業將會在單一字串。</p>
+<p>當您完成修改的值 StringBuilder 物件，您可以呼叫其 StringBuilder.ToString 方法將它轉換成字串。</p>
+<p>String 效能不一定比 StringBuilder 差，可以看下面的參考連結查看比較，雖然文章有歷史了，有興趣的也可以自己實測。</p>
+<h3 id="Null-檢查"><a href="#Null-檢查" class="headerlink" title="Null 檢查"></a>Null 檢查</h3><p>String 類別包含下列兩個便利的方法可讓您測試字串是否 null 或空白：</p>
+<ul>
+<li><p>IsNullOrEmpty 表示字串是是否 null 或等於 String.Empty。 這個方法就不需要使用程式碼，如下所示：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (str == <span class="literal">null</span> || str.Equals(String.Empty))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>IsNullOrWhiteSpace 表示字串是否 null，等於 String.Empty，或只包含泛空白字元。 這個方法就不需要使用程式碼，如下所示：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (str == <span class="literal">null</span> || str.Equals(String.Empty) || str.Trim().Equals(String.Empty))</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<hr>
+<p>在 FB <a href="https://www.facebook.com/groups/DotNetUserGroupTaiwan" target="_blank" rel="noopener">台灣 .NET 技術愛好者俱樂部</a> 看到有人說明使用 string 來進行<a href="https://www.facebook.com/groups/DotNetUserGroupTaiwan/permalink/2112774319015675/" target="_blank" rel="noopener">字串相加的問題</a>。</p>
+<blockquote>
+<p>字串相加，在記憶體的操作不是原字串去擴展，而是宣告另一塊記憶體空間要等於2個字串相加後的大小，然後把2個字串複製填入這塊新宣告的記憶體，再把指標指向這塊新的記憶體。而舊的2個字串會等到GC啟動後才釋放。如果你頻繁的做字串相加，那就是一直在做記憶體複製，然後也會引發頻繁的GC，系統效能自然會差，且若相加到大於85,000 bytes(85k)，會被放到LOH，也就意味著不會釋放，當你達到一個臨界點(取決於32/64 bit與可用記憶體空間)，就會造成Out of memory的問題<br>如果一定要做長字串的相加處理，StringBuilder會是你的好朋友，輸入輸出時要看你用途，如果可以的話，儘可能用Stream相關類別來減少記憶體複製造成的效能損耗與避免重複產生LOH(Large Object Heap)<br>Jed Lin 大大</p>
+</blockquote>
+<p>參考資料<br><br><a href="https://docs.microsoft.com/zh-tw/dotnet/api/system.string?view=netframework-4.7.2" target="_blank" rel="noopener">String Class (System) Microsoft Docs</a><br><br><a href="https://dotblogs.com.tw/jeff-yeh/2008/11/04/5870" target="_blank" rel="noopener">String與Stringbuilder組字串的效能比較 Jeff 隨手記 - 點部落</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2019/01/04/2019-01-04-csharp-string/';
+var disqus_title = 'C# String 小知識';
+var disqus_url = 'http://yoursite.com/2019/01/04/2019-01-04-csharp-string/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

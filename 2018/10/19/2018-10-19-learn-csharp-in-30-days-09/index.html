@@ -1,0 +1,60 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>.NET 後端起手式 30天認識 C# - Day 09 陳述式(四) | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/2019-iT-%E9%82%A6%E5%B9%AB%E5%BF%99%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">2019 iT 邦幫忙鐵人賽</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2018-10-19</div></div></div><div class="container post-header"><h1>.NET 後端起手式 30天認識 C# - Day 09 陳述式(四)</h1></div><div class="container post-content"><h2 id="DAY-09-陳述式-四"><a href="#DAY-09-陳述式-四" class="headerlink" title="DAY 09 陳述式(四)"></a>DAY 09 陳述式(四)</h2><h3 id="陳述式"><a href="#陳述式" class="headerlink" title="陳述式"></a>陳述式</h3><p>今天會介紹本系列文最後一個陳述式，但陳述式並非只有這幾種。</p>
+<h3 id="例外狀況處理陳述式"><a href="#例外狀況處理陳述式" class="headerlink" title="例外狀況處理陳述式"></a>例外狀況處理陳述式</h3><p>有了例外狀況處理陳述式，使我們可以避免程式在出現問題時直接掛掉，或者當資料不如預期時，如昨天的非數字強轉數字等等。</p>
+<p>例外狀況處理陳述式基本由這三個關鍵字 <strong>try</strong> <strong>catch</strong> <strong>finally</strong> 組成，分別敘述這三個的用途與使用時機。</p>
+<h4 id="try"><a href="#try" class="headerlink" title="try"></a>try</h4><p>程式碼在 try 的區塊內，如果執行時有出現任何錯誤不會使程式掛掉，而是在錯誤的句子跳躍，並把錯誤資訊丟給 catch，如果有 catch 的話。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="comment">// something...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因為你會用到的方法，在處理錯誤時都會 throw 所以才會到 catch 區塊內。</p>
+<h4 id="catch"><a href="#catch" class="headerlink" title="catch"></a>catch</h4><p>catch 不能單獨寫，需要有 try 才可以使用，用途是接收錯誤資訊，並針對錯誤進行處理，如</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">  <span class="comment">//  somthing...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Exception 是所有錯誤的基類，所以可以用 Exception 接所有的錯誤，但你也可以針對各種錯誤做出相對應的處理如</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">catch</span> (DivideByZeroException divideByZeroEx) &#123;</span><br><span class="line">  <span class="comment">// 處理除 0 事件</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (IndexOutOfRangeException indexOfRangeEx) &#123;</span><br><span class="line">  <span class="comment">// 處理索引超出範圍事件</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">  <span class="comment">// 處理不在上述的事件</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以應對不同的事件做出不同的處理，講講例外類別幾個我常用的屬性 </p>
+<p><strong>Message</strong> 取得描述目前例外狀況的訊息。</p>
+<p><strong>Source</strong> 取得或設定造成錯誤的應用程式或物件的名稱。</p>
+<p><strong>StackTrace</strong> 取得呼叫堆疊上即時運算框架的字串表示。</p>
+<p>想要看更多的例外類別，或者實作一個自己的例外類別，都可以在文末參考連結看。</p>
+<h4 id="finally"><a href="#finally" class="headerlink" title="finally"></a>finally</h4><p>try 與 catch 結束時都會進來 finally 區塊內，處理之後的行為，比較常見的如資料庫連線開啟後，如果發生錯誤事件可能會沒有正確關閉連線，所以連線關閉的方法往往會寫在 finally，無論成功失敗都會進來 finally 來關閉資料庫連線。</p>
+<p>與 catch 一樣，需要有 try 才能使用。</p>
+<p>知道這三個關鍵字後，我們可以依照上述的需求來排列成，try-catch, try-finally, try-catch-finally 這三種例外處理陳述式，知道每一個關鍵字的含意後，就能知道什麼情況該用哪一種方式來處理例外狀況了。</p>
+<h4 id="throw"><a href="#throw" class="headerlink" title="throw"></a>throw</h4><p>要有 throw 才能使例外處理陳述式運作，如果沒有人拋錯的話，catch 就不會接到任何東西，如果有看原始碼的話，會發現每一個方法在撰寫時都會預先處理例外狀況。</p>
+<p>我們也可以自己寫一個方法來丟 throw，throw 丟出去的東西當然就是我們的例外類別如</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    TestThrow ();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">    Console.WriteLine (<span class="string">$"ex.Message : <span class="subst">&#123;ex.Message&#125;</span>"</span>);</span><br><span class="line">    Console.WriteLine (<span class="string">$"ex.Source : <span class="subst">&#123;ex.Source&#125;</span>"</span>);</span><br><span class="line">    Console.WriteLine (<span class="string">$"ex.StackTrace : <span class="subst">&#123;ex.StackTrace&#125;</span>"</span>);</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    Console.ReadKey ();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">TestThrow</span> (<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> Exception (<span class="string">"QQ"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到一個只貼錯誤的方法，執行這個方法後變會把例外類別給 catch 使用，catch 則印出例外類別的一些屬性，finally 則執行按下任意鍵的方法。</p>
+<p>throw 不是只能丟基底類別，所有的例外類別都能丟，但為了易懂所以會丟符合的例外類別。</p>
+<p>切記 throw 丟出時外層一定要有 catch 接，否則程式是會掛掉的，因為你的例外沒有被解決。</p>
+<h3 id="除錯方法"><a href="#除錯方法" class="headerlink" title="除錯方法"></a>除錯方法</h3><p>介紹了例外狀況處理陳述式，也順便介紹一下 VSCode 的除錯方法</p>
+<p>我們可以在畫面左邊點擊左鍵增加中斷點，或者按下 F9 在目前行增加中斷點。</p>
+<p><img src="/images/2018-10-19/01.png" alt="/images/2018-10-19/01.png"></p>
+<p>有了中斷點後，我們便可以開始基本的除錯了，跟著上面步驟增加中斷點後，程式便會在相對應的位置停下，我們可以觀察到</p>
+<p><img src="/images/2018-10-19/02.png" alt="/images/2018-10-19/02.png"></p>
+<p>A 等同於 F5 ：使程式繼續執行。<br>B 等同於 F10：逐步進行若碰到函式則不進入函式可繼續逐步執行。<br>C 等同於 F11：逐步進行若碰到函式則進入函式並可繼續逐步進行。<br>D 等同於 Shift + F11：跳出目前函式並可繼續逐步進行。<br>E 等同於 Ctrl + Shift + F5：重新啟動程式。<br>F 等同於 Shift + F5：關閉程式。</p>
+<p>為什麼中斷點很重要呢？因為程式在執行過程中，我們可以藉由暫停程式運作，並觀察每一個變數所帶有的值，這使我們方便確認執行過程中，每一步都與自己預想的一樣。</p>
+<p><img src="/images/2018-10-19/03.png" alt="/images/2018-10-19/03.png"></p>
+<h3 id="一些小結論"><a href="#一些小結論" class="headerlink" title="一些小結論"></a>一些小結論</h3><p>今天介紹了如何排除錯誤以及找出錯誤的方式，也就是我們基本的 debug 技巧，這對撰寫程式有很大的幫助，至於 debug 的速度就取決於經驗與本身的其他技巧了。</p>
+<p>感謝閱讀。</p>
+<p>參考連結<br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/language-reference/keywords/exception-handling-statements" target="_blank" rel="noopener">例外狀況處理陳述式 (C# 參考) | Microsoft Docs</a><br><a href="https://hk.saowen.com/a/f1fb5e274451532ed1f8266cb779746e4f961868156f4b8ba7a08ff228e1a3b2" target="_blank" rel="noopener">C# 各類常見Exception 異常信息 - 掃文資訊</a><br><a href="https://docs.microsoft.com/zh-tw/dotnet/api/system.exception?view=netframework-4.7.2" target="_blank" rel="noopener">Exception Class (System) | Microsoft Docs</a><br><a href="https://dotblogs.com.tw/atowngit/2009/12/06/12298" target="_blank" rel="noopener">[C#] 自訂例外處理 (Exception) | .NET 隨筆 - 點部落</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/10/19/2018-10-19-learn-csharp-in-30-days-09/';
+var disqus_title = '.NET 後端起手式 30天認識 C# - Day 09 陳述式(四)';
+var disqus_url = 'http://yoursite.com/2018/10/19/2018-10-19-learn-csharp-in-30-days-09/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

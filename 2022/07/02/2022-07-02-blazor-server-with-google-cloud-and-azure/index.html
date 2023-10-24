@@ -1,0 +1,136 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>Blazor Server 使用 Google Sheet API 並部屬於 Azure App Service | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Azure/" rel="tag">Azure</a><a class="post-tag-link" href="/tags/Google-Cloud/" rel="tag">Google Cloud</a></div><div class="post-time">2022-07-02</div></div></div><div class="container post-header"><h1>Blazor Server 使用 Google Sheet API 並部屬於 Azure App Service</h1></div><div class="container post-content"><p>本文章將說明如何修改 <a href="https://github.com/MMiooiMM/WeddingConfirmation" target="_blank" rel="noopener">婚禮意願填寫表單範本</a> 外部內容(Azure, GCP)，來架設屬於自己的婚禮意願填寫表單，過程完全免費😀</p>
+<p>至於專案調整，就不在此篇討論😅</p>
+<h2 id="事前準備"><a href="#事前準備" class="headerlink" title="事前準備"></a>事前準備</h2><ol>
+<li>乾淨的 Google 帳號 (建議新辦一個)</li>
+<li>乾淨的 Microsoft 帳號 (建議用上面那個辦這一個)</li>
+<li>Visual Studio 2022 (部屬使用)</li>
+</ol>
+<h2 id="表單部分"><a href="#表單部分" class="headerlink" title="表單部分"></a>表單部分</h2><h3 id="一、建立-Google-Cloud-帳戶，可以參考-Day-39-Google-Cloud-Platform-1-免費開通試用雲端服務"><a href="#一、建立-Google-Cloud-帳戶，可以參考-Day-39-Google-Cloud-Platform-1-免費開通試用雲端服務" class="headerlink" title="一、建立 Google Cloud 帳戶，可以參考 Day-39 Google Cloud Platform(1)-免費開通試用雲端服務"></a>一、建立 <a href="https://cloud.google.com/" target="_blank" rel="noopener">Google Cloud</a> 帳戶，可以參考 <a href="https://ithelp.ithome.com.tw/articles/10197590" target="_blank" rel="noopener">Day-39 Google Cloud Platform(1)-免費開通試用雲端服務</a></h3><h3 id="二、至-Google-Cloud-主控台-建立專案。"><a href="#二、至-Google-Cloud-主控台-建立專案。" class="headerlink" title="二、至 Google Cloud 主控台 建立專案。"></a>二、至 <a href="https://console.cloud.google.com/welcome" target="_blank" rel="noopener">Google Cloud 主控台</a> 建立專案。</h3><ol>
+<li>點擊 [建立或選取專案]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-project-step1.png" alt="建立 GCP 專案 步驟一"></p>
+<ol start="2">
+<li>點擊 [新增專案]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-project-step2.png" alt="建立 GCP 專案 步驟二"></p>
+<ol start="3">
+<li>點擊 [建立]，來建立專案</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-project-step3.png" alt="建立 GCP 專案 步驟三"></p>
+<ol start="4">
+<li>等待專案建立完畢後(小鈴鐺會有通知)，點擊 [選取專案]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-project-step4.png" alt="建立 GCP 專案 步驟四"></p>
+<h3 id="三、替專案建立憑證"><a href="#三、替專案建立憑證" class="headerlink" title="三、替專案建立憑證"></a>三、替專案建立憑證</h3><ol>
+<li>點擊 [API 和服務 -&gt; 憑證]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-certificate-step1.png" alt="建立憑證 步驟一"></p>
+<ol start="2">
+<li>點擊 [建立憑證 -&gt; 服務帳戶]，因為範例專案是透過<strong>服務帳戶</strong>來共享 Google Sheet</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-certificate-step2.png" alt="建立憑證 步驟二"></p>
+<ol start="3">
+<li>服務帳戶名稱輸入完畢後即可點擊 [完成]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-certificate-step3.png" alt="建立憑證 步驟三"></p>
+<ol start="4">
+<li>左邊紅框的<strong>電子郵件</strong>就是我們 Google Sheet 分享的目標，點擊右邊紅框的 [編輯按鈕]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-certificate-step4.png" alt="建立憑證 步驟四"></p>
+<ol start="5">
+<li>到 [金鑰] 頁籤來點擊 [新增金鑰 -&gt; 建立新的金鑰]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-certificate-step5.png" alt="建立憑證 步驟五"></p>
+<ol start="6">
+<li>因為範本專案是使用 JSON，[金鑰類型] 請選擇 JSON，點擊 [建立] 後會下載 JSON 檔案，將該檔案的內容覆蓋至範例專案中的 <code>client_secrets.json</code> 內容</li>
+</ol>
+<p><img src="/images/2022-07-02/create-gcp-certificate-step6.png" alt="建立憑證 步驟六"></p>
+<h3 id="四、啟用-Google-Sheet-API"><a href="#四、啟用-Google-Sheet-API" class="headerlink" title="四、啟用 Google Sheet API"></a>四、啟用 Google Sheet API</h3><ol>
+<li>在搜尋欄輸入 <code>google sheet api</code>，並點擊 <code>Google Sheet API</code></li>
+</ol>
+<p><img src="/images/2022-07-02/active-google-sheet-api-step1.png" alt="啟用 Google Sheet API 步驟一"></p>
+<ol start="2">
+<li>點擊 [啟用]，使這個專案可以使用 <code>Google Sheet API</code></li>
+</ol>
+<p><img src="/images/2022-07-02/active-google-sheet-api-step2.png" alt="啟用 Google Sheet API 步驟二"></p>
+<h3 id="五、建立一份-Google-表單"><a href="#五、建立一份-Google-表單" class="headerlink" title="五、建立一份 Google 表單"></a>五、建立一份 Google 表單</h3><ol>
+<li>建立 Google 表單，並授權給剛剛提到的<strong>電子郵件</strong></li>
+</ol>
+<p><img src="/images/2022-07-02/share-google-sheet.png" alt="授權給服務帳戶"></p>
+<ol start="2">
+<li>將*<em>表單 ID *</em>的值填寫至專案範本 <code>appsettings.json</code> 與 <code>appsettings.Development.json</code> 中的 <code>Sheet.SpreadSheetId</code> 欄位上即可。</li>
+</ol>
+<p><img src="/images/2022-07-02/google-sheet-id.png" alt="表單 ID 查看"></p>
+<h3 id="六、運行範本專案"><a href="#六、運行範本專案" class="headerlink" title="六、運行範本專案"></a>六、運行範本專案</h3><p>觀察資料是否正確新增於 Google 表單中</p>
+<h2 id="網站部分"><a href="#網站部分" class="headerlink" title="網站部分"></a>網站部分</h2><h3 id="一、建立-Azure-帳戶，可以參考-DAY02-不想花錢測Azure☁️-手把手帶你免費體驗Azure及Azure介紹"><a href="#一、建立-Azure-帳戶，可以參考-DAY02-不想花錢測Azure☁️-手把手帶你免費體驗Azure及Azure介紹" class="headerlink" title="一、建立 Azure 帳戶，可以參考 DAY02 不想花錢測Azure☁️? 手把手帶你免費體驗Azure及Azure介紹"></a>一、建立 <a href="https://azure.microsoft.com/zh-tw/" target="_blank" rel="noopener">Azure</a> 帳戶，可以參考 <a href="https://ithelp.ithome.com.tw/articles/10201833" target="_blank" rel="noopener">DAY02 不想花錢測Azure☁️? 手把手帶你免費體驗Azure及Azure介紹</a></h3><h3 id="二、建立-Web-應用程式"><a href="#二、建立-Web-應用程式" class="headerlink" title="二、建立 Web 應用程式"></a>二、建立 Web 應用程式</h3><ol>
+<li>點擊 [建立資源]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-app-service-step1.png" alt="建立 Web 應用程式 步驟一"></p>
+<ol start="2">
+<li>點擊 [Web 應用程式]</li>
+</ol>
+<p><img src="/images/2022-07-02/create-app-service-step2.png" alt="建立 Web 應用程式 步驟二"></p>
+<ol start="3">
+<li>如果沒有找到，也可以搜尋 <code>web service</code> 來找到</li>
+</ol>
+<p><img src="/images/2022-07-02/create-app-service-step3.png" alt="建立 Web 應用程式 步驟三"></p>
+<p>  填寫以下內容</p>
+<p><img src="/images/2022-07-02/create-app-service-step4.png" alt="建立 Web 應用程式 步驟四"></p>
+<ol start="4">
+<li>直接建立即可</li>
+</ol>
+<p><img src="/images/2022-07-02/create-app-service-step5.png" alt="建立 Web 應用程式 步驟五"></p>
+<p>  建立完成即可到下一步，不需要再動它了</p>
+<h3 id="三、部屬-Web-應用程式"><a href="#三、部屬-Web-應用程式" class="headerlink" title="三、部屬 Web 應用程式"></a>三、部屬 Web 應用程式</h3><p>以下為 Visual Studio 2022 操作畫面</p>
+<ol>
+<li>點擊 [建置 -&gt; 發佈 WeddingConfirmation(H)]</li>
+</ol>
+<p><img src="/images/2022-07-02/publish-application-step1.png" alt="部屬 Web 應用程式 步驟一"></p>
+<ol start="2">
+<li>選擇 <a href="https://azure.microsoft.com/zh-tw/" target="_blank" rel="noopener">Azure</a> 並點擊 [下一步]</li>
+</ol>
+<p><img src="/images/2022-07-02/publish-application-step2.png" alt="部屬 Web 應用程式 步驟二"></p>
+<ol start="3">
+<li>選擇 [App Serive (Windows)] 並點擊 [下一步]</li>
+</ol>
+<p><img src="/images/2022-07-02/publish-application-step3.png" alt="部屬 Web 應用程式 步驟三"></p>
+<ol start="4">
+<li>如果還沒登入，請用剛剛建立 App Service 的微軟帳戶登入</li>
+</ol>
+<p><img src="/images/2022-07-02/publish-application-step4.png" alt="部屬 Web 應用程式 步驟四"></p>
+<ol start="5">
+<li>登入完成後，選擇建立的 App Service 並點擊 [下一步]</li>
+</ol>
+<p><img src="/images/2022-07-02/publish-application-step5.png" alt="部屬 Web 應用程式 步驟五"></p>
+<ol start="6">
+<li>選擇 [發行 (產生 pubxml 檔案)] 並點擊 [完成]</li>
+</ol>
+<p><img src="/images/2022-07-02/publish-application-step6.png" alt="部屬 Web 應用程式 步驟六"></p>
+<ol start="7">
+<li>完成後就有發佈設定檔了，以後點擊 [建置 -&gt; 發佈 WeddingConfirmation(H)] 都會到下面這個畫面，按下 [發佈] 就可以將應用程式發佈到指定的 App Service 上了</li>
+</ol>
+<p><img src="/images/2022-07-02/publish-application-step7.png" alt="部屬 Web 應用程式 步驟七"></p>
+<h3 id="四、查看網頁"><a href="#四、查看網頁" class="headerlink" title="四、查看網頁"></a>四、查看網頁</h3><p>點擊 [連結] 就能夠看到網站，另外可以發現我的 App Service 方案為 <code>D1</code>，因為在發佈時太多人使用導致服務掛掉，所以升級了方案，建議在準備上線時調整一下，並在尖峰期過後調整回來，以免額度用完導致帳號被停用(網站掛掉😥)。</p>
+<p><img src="/images/2022-07-02/application-url.png" alt="查看網頁"></p>
+<p>以上都調整成自己的設定就完成了！再來就是換換名字與圖片就擁有自己的婚禮意願填寫表單了，另外祝福所有需要此內容的新人，恭喜你們😍😍</p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2022/07/02/2022-07-02-blazor-server-with-google-cloud-and-azure/';
+var disqus_title = 'Blazor Server 使用 Google Sheet API 並部屬於 Azure App Service';
+var disqus_url = 'http://yoursite.com/2022/07/02/2022-07-02-blazor-server-with-google-cloud-and-azure/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

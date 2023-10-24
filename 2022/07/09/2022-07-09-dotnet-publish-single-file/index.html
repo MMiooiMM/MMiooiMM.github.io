@@ -1,0 +1,51 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>.NET 發佈單一執行檔 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/NET/" rel="tag">.NET</a></div><div class="post-time">2022-07-09</div></div></div><div class="container post-header"><h1>.NET 發佈單一執行檔</h1></div><div class="container post-content"><p>ConsoleApp 如果要發佈單一執行檔，只需要如下圖勾選 “Produce Single File” 即可</p>
+<p><img src="/images/2022-07-09/produce-single-file.png" alt="勾選 Produce Single File 畫面"></p>
+<p>但我沒有圖片上的功能😥😥，所以才會寫這一篇文章筆記。(圖片來自於 <a href="https://stackoverflow.com/questions/69926447/publishing-c-sharp-console-app-as-a-stand-alone-executable" target="_blank" rel="noopener">Publishing C# Console App as a stand-alone executable</a>，印象中也看過該選項)</p>
+<p>眾所皆知，所有的使用者操作介面，背後都是一條條指令，只需要下達正確的命令也可以執行預期的行為。</p>
+<p>了解指令最快的方式就是查找官方文件，<a href="https://docs.microsoft.com/en-us/dotnet/core/deploying/single-file/overview?tabs=cli" target="_blank" rel="noopener">Single-file deployment and executable</a> 就說明了該如何發佈單一執行檔。</p>
+<ol>
+<li>在 csproj 檔裡面添加</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">PropertyGroup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">PublishSingleFile</span>&gt;</span>true<span class="tag">&lt;/<span class="name">PublishSingleFile</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">PropertyGroup</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>執行 <code>dotnet publish</code> 發佈時增加 <code>-r &lt;RID&gt;</code> 參數來指定 runtime</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet publish -r win-x64</span><br></pre></td></tr></table></figure>
+
+<p>如果執行環境本身裝有 runtime，可以透過 <code>--sc|--self-contained [true|false]</code> 參數使發佈時不帶有 runtime，讓程式變得更輕巧(此參數預設為 <code>true</code>)。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dotnet publish -r win-x64 --self-contained false</span><br><span class="line">dotnet publish -r win-x64 --no-self-contained &#x2F;&#x2F; 與前者相等</span><br></pre></td></tr></table></figure>
+
+<p>若不想要在 csproj 檔案設定，也可以這樣一步到位</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dotnet publish -r win-x64 -p:PublishSingleFile&#x3D;true --self-contained false</span><br></pre></td></tr></table></figure>
+
+<p>若對 <code>dotnet publish</code> 指令感興趣可以自行閱讀 <a href="https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-publish" target="_blank" rel="noopener">dotnet publish</a>。</p>
+<ol start="3">
+<li>執行後就只會產生 exe 與 pdb 檔案</li>
+</ol>
+<p>這時如果不想要產生 pdb 檔案該怎麼辦？一樣可以透過 csproj 設定處理</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">DebugType</span>&gt;</span>embedded<span class="tag">&lt;/<span class="name">DebugType</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>添加完畢後，就會將 pdb 合併至 exe 裡面了。了解更多可至 <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/code-generation" target="_blank" rel="noopener">C# Compiler Options that control code generation</a> 與黑暗大的文章 <a href="https://blog.darkthread.net/blog/about-dotnet-pdb/" target="_blank" rel="noopener">.NET 知識高裝檢 - .pdb 檔、編譯最佳化與偵錯</a>。</p>
+<p>這樣我們 <code>publish</code> 出來的結果就會是單一執行檔囉，可喜可賀🥳🥳</p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2022/07/09/2022-07-09-dotnet-publish-single-file/';
+var disqus_title = '.NET 發佈單一執行檔';
+var disqus_url = 'http://yoursite.com/2022/07/09/2022-07-09-dotnet-publish-single-file/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

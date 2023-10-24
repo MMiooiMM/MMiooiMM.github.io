@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 13 魔術技巧 - 掌握元件生命週期 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-28</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 13 魔術技巧 - 掌握元件生命週期</h1></div><div class="container post-content"><p>今天要來介紹的是元件的生命週期，了解生命週期才能在元件進行初始化和轉譯期間時執行額外的作業。</p>
+<hr>
+<p>這邊先上流程圖，我們再來慢慢說明。</p>
+<p><img src="/images/2020-09-28/lifecycle-flow.png" alt="/images/2020-09-28/lifecycle-flow.png"></p>
+<p>可以看到觸發變更的時間點有三個，父元件渲染到子元件時，使用者行為導致的事件產生，以及父元件將其從渲染樹移除。</p>
+<p>而我們能覆寫的生命週期方法有以下四個：</p>
+<ul>
+<li>元件初始化方法 (<code>OnInitialized</code> / <code>OnInitializedAsync</code>)</li>
+</ul>
+<p>此時間點上，元件已從父元件接收到初始化的參數，只會在 <code>SetParametersAsync</code> 完成後執行一次，絕對不會再次執行。</p>
+<p>而當元件屬於頁面元件，也就是使用了 <code>@page</code> 變成可路由元件，如果 URL 不變 blazor 就會重新使用該元件，也就是不會執行 <code>OnInitialized/OnInitializedAsync</code> 且不會觸發 <code>IDisposable.Dispose</code>。</p>
+<ul>
+<li>設定參數之後 (<code>OnParametersSet</code> / <code>OnParametersSetAsync</code>)</li>
+</ul>
+<p>此時間點上，元件已經初始化完成，當 <code>OnInitialized/OnInitializedAsync</code> 執行結束後會執行外，父元件重新渲染並提供新參數時，也會被呼叫。</p>
+<p>提供新參數時如果是可變的類型，如自訂類型時，因為 blazor 無法知道參數的內部是否發生變化，所以一律視為已改變；但不可變的類型，則需要至少一個參數改變，才會重新渲染。</p>
+<ul>
+<li>防止 UI 重新渲染 (<code>ShouldRender</code>)</li>
+</ul>
+<p>再提到 <code>ShouldRender</code> 之前，先提一下它上層的 <code>StateHasChanged</code>，<code>StateHasChanged</code> 是不能異動的，用於通知元件其狀態已變更，且所有的 <code>EventCallback</code> 方法都會自動呼叫 <code>StateHasChanged</code>。</p>
+<p>如果想要避免使用者操作產生的渲染時，可以覆寫此方法來防止 UI 重新渲染，也就是可以確保渲染樹一定是從初始化產生的。</p>
+<p>若想進一步了解可以參考<a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/webassembly-performance-best-practices?view=aspnetcore-3.1#avoid-unnecessary-component-renders" target="_blank" rel="noopener">ASP.NET Core Blazor WebAssembly 效能最佳做法 - 避免不必要的元件呈現</a>。</p>
+<ul>
+<li>元件呈現之後 (<code>OnAfterRender</code> / <code>OnAfterRenderAsync</code>)</li>
+</ul>
+<p>此時間點上，元件已經完成渲染。此時 DOM 就已經畫好了，如果要使用第三方的 JavaScript 來存取 DOM，就能正確取得了。</p>
+<p>而這方法有提供 <code>firstRender</code> 參數，代表是否為第一次渲染，可以確保有些動作只在初始化時執行一次即可。</p>
+<h3 id="元件處置"><a href="#元件處置" class="headerlink" title="元件處置"></a>元件處置</h3><p>這邊要特別注意的是，如果在元件的生命週期中訂閱事件，請務必在元件移除時進行解除，可以透過實作 <code>IDisposable</code> 來正確釋放資源。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">@implements IDisposable</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="keyword">private</span> EventHandler&lt;FieldChangedEventArgs&gt; fieldChanged;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnInitialized</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>  &#123;</span><br><span class="line">    editContext = <span class="keyword">new</span> EditContext(...);</span><br><span class="line"></span><br><span class="line">    fieldChanged = (_, __) =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    editContext.OnFieldChanged += fieldChanged;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>  &#123;</span><br><span class="line">    editContext.OnFieldChanged -= fieldChanged;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>以上就是元件生命週期的介紹，如果想看實際用法可以參考<a href="https://github.com/MMiooiMM/learn-blazor-in-30-days-sample/commit/1f9c238799eacef180f2fdbf33966bf141ff60c2" target="_blank" rel="noopener">範例程式碼 - Day13</a>。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/components/lifecycle?view=aspnetcore-3.1" target="_blank" rel="noopener">ASP.NET Core Blazor 生命週期</a><br><a href="https://blazor-university.com/components/component-lifecycles/" target="_blank" rel="noopener">Component lifecycles</a><br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/components/lifecycle?view=aspnetcore-3.1#component-disposal-with-idisposable" target="_blank" rel="noopener">使用 IDisposable 的元件處置</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/28/2020-09-28-learn-blazor-in-30-days-13/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 13 魔術技巧 - 掌握元件生命週期';
+var disqus_url = 'http://yoursite.com/2020/09/28/2020-09-28-learn-blazor-in-30-days-13/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

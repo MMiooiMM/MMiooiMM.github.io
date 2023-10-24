@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>Rxjs 比較 BehaviorSubject 和 ReplaySubject 差異 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Rxjs/" rel="tag">Rxjs</a></div><div class="post-time">2020-08-15</div></div></div><div class="container post-header"><h1>Rxjs 比較 BehaviorSubject 和 ReplaySubject 差異</h1></div><div class="container post-content"><p><a href="https://rxjs-dev.firebaseapp.com/api/index/class/BehaviorSubject" target="_blank" rel="noopener">BehaviorSubject</a> 和 <a href="https://rxjs-dev.firebaseapp.com/api/index/class/ReplaySubject" target="_blank" rel="noopener">ReplaySubject</a> 都是繼承於 <code>Subject</code>，兩者皆可以紀錄訂閱內容並在新的訂閱者出現時提供舊有的訂閱內容，簡單說就是替 <code>Subject</code> 增加<strong>回播功能</strong>。表面上兩者差異只有前者能夠儲存一個內容，而後者能夠儲存多個內容，但實際上可不只有這些，本文將帶你深入探討其中奧妙。(rxjs 版本為 6.5.5)</p>
+<p>在此整理了一份兩者對回播功能的處理方式。</p>
+<p>BehaviorSubject</p>
+<ul>
+<li>擁有初始值，且當外部傳入新的訂閱內容時，會一併修改初始值。</li>
+<li>回播初始值。</li>
+</ul>
+<p>ReplaySubject</p>
+<ul>
+<li>擁有紀錄訂閱內容的陣列，並可以設定其紀錄數量，當外部傳入新的訂閱內容時，會放入此陣列。</li>
+<li>回播陣列。</li>
+<li>能夠只取至目前為止一段時間內的訂閱內容。</li>
+<li>即便已經完成(<code>complete</code>)，在本身取消訂閱(<code>unsubscribe</code>)前都能夠回播。</li>
+</ul>
+<p>看完兩者回播方式的差異後，再藉由原始碼了解內部的行為。</p>
+<h3 id="BehaviorSubject"><a href="#BehaviorSubject" class="headerlink" title="BehaviorSubject"></a>BehaviorSubject</h3><p>建構式為 <code>constructor(_value: T)</code>。<br>一定要填入一個初始值(<code>_value</code>)，當外部傳入新的訂閱內容時，會去修改 <code>_value</code>；當有新的訂閱者出現時，能夠直接提供初始值給訂閱者。</p>
+<h3 id="ReplaySubject"><a href="#ReplaySubject" class="headerlink" title="ReplaySubject"></a>ReplaySubject</h3><p>建構式為 <code>constructor(bufferSize: number = Number.POSITIVE_INFINITY, windowTime: number = Number.POSITIVE_INFINITY, scheduler?: SchedulerLike)</code>。</p>
+<ul>
+<li><code>bufferSize</code> 為紀錄數量，預設為無限大，當數值小於 1 時，以 1 取代。</li>
+<li><code>windowTime</code> 為只取多長時間內(milliseconds)的訂閱內容，預設為無限大，也就是不限制時間，當數值小於 1 時，以 1 取代。</li>
+<li><code>scheduler</code> 因為本文著重於回播功能，所以此變數先不談。</li>
+</ul>
+<p>當外部傳入新的訂閱內容時，會將訂閱內容記錄在陣列保存，若超出紀錄數量，則將最舊的移出陣列。</p>
+<p>當有新的訂閱者出現時，若 <code>windowTime</code> 為無限大則直接根據陣列內容依序提供給訂閱者；否則會將超過特定時間的紀錄排除。且回播時，並不會因為 <code>Subject</code> 已經完成(<code>complete</code>)導致<code>isStopped</code> 為真，而選擇不回播，只是改變訂閱時回傳的 <code>subscription</code> 物件為 <code>Subscription.EMPTY</code>。</p>
+<p>參考資料<br><a href="https://rxjs-dev.firebaseapp.com/" target="_blank" rel="noopener">RxJS 官網</a><br><a href="https://github.com/ReactiveX/rxjs/blob/6.5.5/src/internal/BehaviorSubject.ts#L6-L45" target="_blank" rel="noopener">BehaviorSubject Source Code</a><br><a href="https://github.com/ReactiveX/rxjs/blob/6.5.5/src/internal/ReplaySubject.ts#L9-L131" target="_blank" rel="noopener">ReplaySubject Source Code</a><br><a href="https://github.com/ReactiveX/rxjs/blob/6.5.5/src/internal/Subject.ts" target="_blank" rel="noopener">Subject Source Code</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/08/15/2020-08-15-rxjs-behavior-subject-vs-replay-subject/';
+var disqus_title = 'Rxjs 比較 BehaviorSubject 和 ReplaySubject 差異';
+var disqus_url = 'http://yoursite.com/2020/08/15/2020-08-15-rxjs-behavior-subject-vs-replay-subject/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

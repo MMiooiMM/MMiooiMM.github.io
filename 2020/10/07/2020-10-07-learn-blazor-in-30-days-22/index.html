@@ -1,0 +1,64 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 22 魔術技巧 - 與 JavaScript 共舞 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-10-07</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 22 魔術技巧 - 與 JavaScript 共舞</h1></div><div class="container post-content"><p>今天要來介紹在 Blazor WebAssembly 與 JavaScript 的互動方式，也就是 JavaScript interop，畢竟目前有些行為如果不透過 JavaScript 是無法實現的，如在<a href="https://ithelp.ithome.com.tw/articles/10248513" target="_blank" rel="noopener">魔術技巧 - 取得元件參考</a>提到的 Focus 元素等 DOM 的操作 ，與使用 windows 物件提供的成員。所以目前的 Blazor WebAssembly 還是需要借助撰寫 JavaScript 來達成特地行為。</p>
+<hr>
+<p>要從 .NET 呼叫 JavaScript，只需要在元件注入 <code>JSRuntime</code> 即可如：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@inject IJSRuntime JSRuntime</span><br></pre></td></tr></table></figure>
+
+<p>並且透過 <code>InvokeAsync</code> 來呼叫指定的 JavaScript 函式，而其參數有：</p>
+<ul>
+<li><p>identifier(<code>string</code>)：呼叫方法的識別碼，是相對於全域範圍(<code>window</code>)，也就是如果想要呼叫 <code>window.someScope.someFunction</code>，則識別碼為 <code>someScope.someFunction</code>。</p>
+</li>
+<li><p>args(<code>Object[]</code>)：呼叫方法的引數陣列，也就是如果呼叫的 JavaScript 方法需要兩個參數，就寫兩個引數，但要注意每個引數都必須是能夠 JSON 序列化。</p>
+</li>
+<li><p>cancellationToken(<code>CancellationToken</code>)：發出取消操作的信號，指定此參數將覆蓋所有預設的取消信號，例如因為超時（DefaultAsyncTimeout）而導致的取消。</p>
+</li>
+<li><p>timeout(<code>TimeSpan</code>)：超過指定時間則取消操作，指定此參數將覆蓋預設時間。</p>
+</li>
+</ul>
+<p>而傳回值為 <code>ValueTask&lt;TValue&gt;</code>，<code>TValue</code> 應符合最適合對應至 JavaScript 所傳回 JSON 型別的 .NET 型別，且如果 JavaScript 傳回的是 Promise，則會拆開並傳回 Promise 所等待的結果。</p>
+<p>倘若 JavaScript 是傳回 <code>void(0)/void</code>，則可以使用 <code>InvokeVoidAsync</code> 來表示，其參數與上述相同。</p>
+<p>而撰寫 JavaScript 時，建議是新增 <code>.js</code> 檔在 <code>wwwroot</code> 目錄下，並透過引用的方法加在 <code>wwwroot/index.html</code> 中如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--wwwroot/index.html--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"exampleJsInterop.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>切勿將 <code>&lt;script&gt;</code> 標籤放在元件檔中，因為 <code>&lt;script&gt;</code> 無法動態變更。</strong></p>
+<p><strong>在大部分情況下請不要透過 JavaScript 來修改 DOM，因為 JavaScript 可能會干擾 Blazor 的變更追蹤。</strong></p>
+<hr>
+<p>如果要反過來，使用 JavaScript 來呼叫 .NET 程式碼也是可行的，只需要建立帶有 <code>[JSInvokable]</code> 屬性的公開靜態方法即可如：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">JSInvokable</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">Sum</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span> =&gt; a + b;</span><br></pre></td></tr></table></figure>
+
+<p>而 JavaScript 的呼叫方式為：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DotNet.invokeMethodAsync(<span class="string">'&#123;APP ASSEMBLY&#125;'</span>, <span class="string">'Sum'</span>, <span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">  .then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(data);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>其中的 <code>{APP ASSEMBLY}</code> 是應用程式的名稱，也就是說如果有兩個以上一樣名稱的公開靜態方法，就會因為不知道需要執行誰而導致程式錯誤。</p>
+<p>要解決這個問題，我們可以將元件功能抽成一個服務，在傳送資料給 JavaScript 時，可以透過 <code>DotNetObjectReference</code> 將服務包在裡面，使得 JavaScript 呼叫 .NET 方法時，可以直接呼叫服務的方法，如：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Day22SampleService.cs</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Day22SampleService</span></span><br><span class="line">&#123;</span><br><span class="line">  [<span class="meta">JSInvokable</span>]</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">Sum</span>(<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span> =&gt; a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Day22Sample.razor</span></span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="keyword">private</span> DotNetObjectReference&lt;Day22SampleService&gt; objRef;</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task&lt;<span class="keyword">string</span>&gt; <span class="title">callDotNetAndPrintData2</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>  &#123;</span><br><span class="line">    objRef = DotNetObjectReference.Create(<span class="keyword">new</span> Day22SampleService());</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">await</span> JSRuntime.InvokeAsync&lt;<span class="keyword">string</span>&gt;(<span class="string">"exampleJsFunctions.callDotNetAndPrintData2"</span>, objRef);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// js</span></span><br><span class="line"><span class="built_in">window</span>.exampleJsFunctions = &#123;</span><br><span class="line">  callDotNetAndPrintData2: <span class="function"><span class="keyword">function</span> (<span class="params">dotnetHelper</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> dotnetHelper.invokeMethodAsync(<span class="string">'Sum'</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line">      .then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(data);</span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>這樣一來就可以準確鎖定特定服務給 JavaScript 呼叫。</p>
+<hr>
+<p>以上就是 .NET 與 JavaScript 的互動方式，如果想看完整範例可以參考<a href="https://github.com/MMiooiMM/learn-blazor-in-30-days-sample/commit/1e8af7316baba73a163d33ff5523d217ebb45c3c" target="_blank" rel="noopener">範本程式碼 - Day22</a>。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/call-javascript-from-dotnet?view=aspnetcore-3.1" target="_blank" rel="noopener">從 .NET 呼叫 JavaScript</a><br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/call-dotnet-from-javascript?view=aspnetcore-3.1" target="_blank" rel="noopener">從 JavaScript 呼叫 .NET</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/10/07/2020-10-07-learn-blazor-in-30-days-22/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 22 魔術技巧 - 與 JavaScript 共舞';
+var disqus_url = 'http://yoursite.com/2020/10/07/2020-10-07-learn-blazor-in-30-days-22/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

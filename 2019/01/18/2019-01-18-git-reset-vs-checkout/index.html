@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>Git reset 與 checkout 的差異 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Git/" rel="tag">Git</a></div><div class="post-time">2019-01-18</div></div></div><div class="container post-header"><h1>Git reset 與 checkout 的差異</h1></div><div class="container post-content"><p>本文將會介紹 reset 與 checkout 的運作方式與差別。</p>
+<p>在開始前需要了結的 Git 小觀念。</p>
+<h2 id="Git-小觀念"><a href="#Git-小觀念" class="headerlink" title="Git 小觀念"></a>Git 小觀念</h2><h3 id="HEAD"><a href="#HEAD" class="headerlink" title="HEAD"></a>HEAD</h3><p>Role: Last commit snapshot, next parent</p>
+<p>一般指向一個 <code>Branch</code> 的最新一個 <code>Commit</code>，也是使用者目前所能看到的 Git 內容。</p>
+<p>新增的 <code>Commit</code> 必定接在目前 HEAD 後面。</p>
+<h3 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h3><p>Role: Proposed next commit snapshot</p>
+<p>又稱為 <code>Staging area</code> 暫存區，算是 <code>Commit</code> 前的過渡區，告知 Git 哪些檔案需要包含在此次 <code>Commit</code> 內。</p>
+<h3 id="Working-Directory"><a href="#Working-Directory" class="headerlink" title="Working Directory"></a>Working Directory</h3><p>Role: Sandbox</p>
+<p>對目前內容 <code>HEAD</code> 進行的修改，都會存放在此沙盒中。</p>
+<p>了解 GIT 這三個部分後，在 GIT 建立支點過程中，首先我們會在 <code>Working Directory</code> 中進行文件的新增、編輯或刪除，之後在需要納入此次支點的文件 <code>add</code> ，使沙盒中的修改進入到暫存區中，再透過 <code>commit</code> 指令使在暫存區的內容全部包含在一個新的支點，然後移動 <code>HEAD</code> 到該支點上。</p>
+<p>而 <code>Reset</code> 與 <code>Checkout</code> 則可以幫助我們移動 <code>HEAD</code> 、將暫存區的內容移出等等。</p>
+<h2 id="Reset"><a href="#Reset" class="headerlink" title="Reset"></a>Reset</h2><p>移動 <code>HEAD</code> 指向的 <code>Branch</code>，有三種模式可以使用。</p>
+<h3 id="Soft"><a href="#Soft" class="headerlink" title="Soft"></a>Soft</h3><p><code>reset --soft [commit]</code></p>
+<p>單純移動 <code>HEAD</code> 與其 <code>Branch</code>。</p>
+<h3 id="Mixed-預設指令"><a href="#Mixed-預設指令" class="headerlink" title="Mixed (預設指令)"></a>Mixed (預設指令)</h3><p><code>reset [commit]</code></p>
+<p>除了移動 <code>HEAD</code> 與其 <code>Branch</code> 外，也將 <code>Index</code> 的內容移出。</p>
+<h3 id="Hard"><a href="#Hard" class="headerlink" title="Hard"></a>Hard</h3><p><code>reset --hard [commit]</code></p>
+<p>除了移動 <code>HEAD</code> 與其 <code>Branch</code> 外，也將 <code>Working Directory</code> 與 <code>Index</code> 的內容移出。</p>
+<p><strong>如果不加任何的 CommitID 則會以 HEAD 為移動的目的地。</strong></p>
+<h2 id="Checkout"><a href="#Checkout" class="headerlink" title="Checkout"></a>Checkout</h2><p><code>checkout &lt;commit&gt;</code></p>
+<p>checkout is working-directory safe - it will check to make sure it’s not blowing away files that have changes to them.</p>
+<p>也就是說在進行 <code>checkout</code> 時，會檢查你的沙盒是否有更改，如果有且此更改會因為 <code>checkout</code> 而失去，便會阻止你。</p>
+<p><code>checkout</code> 移動的是 <code>HEAD</code> 本身，並不會連其 <code>Branch</code> 一起移動，一般使用在切換分支。</p>
+<p>雖然使用上看起來像 <code>reset --hard</code>，但 <code>reset --hard</code> 並不會檢查你的沙盒並且會移動你的分支。</p>
+<h2 id="對檔案進行操作"><a href="#對檔案進行操作" class="headerlink" title="對檔案進行操作"></a>對檔案進行操作</h2><p>兩者皆可以針對單一檔案進行內容移動。</p>
+<p><code>reset [commit] &lt;paths&gt;</code></p>
+<p><code>git reset -- xxx.html</code> 將 <code>xxx.html</code> 的 <code>Index</code> 的內容移出。</p>
+<p><code>checkout [commit] &lt;paths&gt;</code></p>
+<p><code>git checkout -- xxx.html</code> 將 <code>xxx.html</code> 的 <code>Working Directory</code> 與 <code>Index</code> 的內容移出。</p>
+<p><code>checkout</code> 如上所說如同 <code>reset --hard</code>，但在進行檔案操作時，就不是 <code>working-directory</code> safe 了，所以使用時請三思。</p>
+<p><strong>對 file 操作時，無論是 reset 或者 checkout 建議在檔案名稱前面加上<code>--</code>來標示</strong></p>
+<p>詳細可參考 <a href="https://stackoverflow.com/questions/6561142/difference-between-git-checkout-filename-and-git-checkout-filename/6561160#6561160" target="_blank" rel="noopener">Difference between “git checkout <filename>“ and “git checkout -​- <filename>“ - Stack Overflow</a></p>
+<p>參考資料<br><br><a href="https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified" target="_blank" rel="noopener">Git - Reset Demystified</a><br><br><a href="https://gitbook.tw/chapters/using-git/reset-commit.html" target="_blank" rel="noopener">【狀況題】剛才的 Commit 後悔了，想要拆掉重做… - 為你自己學 Git  高見龍</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2019/01/18/2019-01-18-git-reset-vs-checkout/';
+var disqus_title = 'Git reset 與 checkout 的差異';
+var disqus_url = 'http://yoursite.com/2019/01/18/2019-01-18-git-reset-vs-checkout/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

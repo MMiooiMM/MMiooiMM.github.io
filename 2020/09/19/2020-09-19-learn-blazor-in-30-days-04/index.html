@@ -1,0 +1,73 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 04 魔術道具 - Razor 指示詞 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-19</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 04 魔術道具 - Razor 指示詞</h1></div><div class="container post-content"><p>昨天提到當 <code>@</code> 後面接著 Razor 保留關鍵字時，它才會轉換成 Razor 特定的標記，而今天就要來介紹第一批的關鍵字，也就是 Razor 指示詞(Directives)。</p>
+<p>雖然都沒有特別提到，但第二天會先建舞台的用意，就是有一個環境可以練習道具，可以試著修改裡面的檔案來看每一個道具效果。</p>
+<hr>
+<h4 id="attribute"><a href="#attribute" class="headerlink" title="@attribute"></a>@attribute</h4><p><code>@attribute</code> 指示詞針對頁面增加屬性。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@attribute [Authorize]</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面增加 [Authorize] 屬性。</p>
+<h4 id="code"><a href="#code" class="headerlink" title="@code"></a>@code</h4><p><code>@code</code> 指示詞針對頁面增加成員(欄位、屬性和方法)。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@code &#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> currentCount = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面增加私有數字欄位<code>currentCount</code>，且初始值為<code>0</code>。</p>
+<h4 id="function"><a href="#function" class="headerlink" title="@function"></a>@function</h4><p><code>@functions</code> 指示詞針對頁面增加成員(欄位、屬性和方法)。</p>
+<p>疑～怎麼重複了？因為 <code>@code</code> 和 <code>@functions</code> 真的是一樣的作用，為了使程式碼語意更清楚，官方建議加入欄位或屬性使用 <code>@code</code>，而加入方法則使用 <code>@functions</code>。</p>
+<p>而昨天說的區域函式建議寫在 <code>@function</code> 裡。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@functions&#123;</span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">IncrementCount</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        currentCount++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面增加私有方法<code>IncrementCount</code>，並與剛剛增加的<code>currentCount</code>欄位互動。</p>
+<h4 id="implements"><a href="#implements" class="headerlink" title="@implements"></a>@implements</h4><p><code>@implements</code> 指示詞針對頁面加入需實作的介面。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@implements IDisposable</span><br><span class="line"></span><br><span class="line">@functions &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">bool</span> _isDisposed;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span>(<span class="params"></span>)</span> =&gt; _isDisposed = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面必須實作<code>IDisposable</code>介面的方法。</p>
+<h4 id="inherits"><a href="#inherits" class="headerlink" title="@inherits"></a>@inherits</h4><p><code>@inherits</code> 指示詞針對頁面加入繼承的父類。</p>
+<p>先新增 <code>CustomRazorPage.razor</code> 檔案，並加入內容。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@* CustomRazorPage.razor *@</span><br><span class="line">@code &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> CustomText = <span class="string">"嗨嗨，我是米歐。"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>就可以使用：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@inherits CustomRazorPage</span><br><span class="line"></span><br><span class="line">&lt;p&gt;@CustomText&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面能夠使用父類<code>CustomRazorPage</code>內所能存取的成員。</p>
+<h4 id="inject"><a href="#inject" class="headerlink" title="@inject"></a>@inject</h4><p><code>@inject</code> 指示詞針對頁面注入對應服務。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@inject HttpClient httpClient</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面能夠從 DI 容器中取得<code>HttpClient</code>實體。</p>
+<p>後續文章將針對<strong>相依性注入</strong>詳細介紹。</p>
+<h4 id="layout"><a href="#layout" class="headerlink" title="@layout"></a>@layout</h4><p><code>@layout</code> 指示詞針對頁面加入版面配置元件。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@layout MainLayout</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面增加<code>MainLayout</code>版面配置。</p>
+<p>後續文章將針對<strong>版面配置</strong>詳細介紹。</p>
+<h4 id="page"><a href="#page" class="headerlink" title="@page"></a>@page</h4><p><code>@page</code> 指示詞設定頁面路由。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@page &quot;&#x2F;counter&quot;</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面的進入點為<code>/counter</code>。</p>
+<p>後續文章將針對<strong>路由</strong>詳細介紹。</p>
+<h4 id="using"><a href="#using" class="headerlink" title="@using"></a>@using</h4><p><code>@using</code> 指示詞針對頁面加入其他命名空間的別名。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@<span class="keyword">using</span> System;</span><br></pre></td></tr></table></figure>
+
+<p>使該頁面能夠直接瀏覽<code>System</code>命名空間。</p>
+<hr>
+<p>以上就是第一批魔術道具 Razor 指示詞的所有介紹與用途啦。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/mvc/views/razor?view=aspnetcore-3.1#directives" target="_blank" rel="noopener">Razor 語法 - 指示詞</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/19/2020-09-19-learn-blazor-in-30-days-04/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 04 魔術道具 - Razor 指示詞';
+var disqus_url = 'http://yoursite.com/2020/09/19/2020-09-19-learn-blazor-in-30-days-04/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

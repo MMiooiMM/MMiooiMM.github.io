@@ -1,0 +1,67 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>使用 Jekyll + Github 來建立一個部落格（二） | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Jekyll/" rel="tag">Jekyll</a></div><div class="post-time">2018-09-12</div></div></div><div class="container post-header"><h1>使用 Jekyll + Github 來建立一個部落格（二）</h1></div><div class="container post-content"><p>建立了部落格後，當然要為未來規劃一下，如果文章太多的話勢必就要有分類了。</p>
+<h3 id="實作一個標籤功能"><a href="#實作一個標籤功能" class="headerlink" title="實作一個標籤功能"></a>實作一個標籤功能</h3><p>標籤可以使用 tags 跟 categories 兩種方法實現。</p>
+<p>category 在生成檔案時會多幾層資料夾在根目錄之外，比如你在文件裡寫成 [A, B]，則會在生成檔案時，將檔案放置在<code>_site\A\B\_post</code>裡，而 tags 不會，這是我目前已知的差異。</p>
+<p>tags 若改成其他名稱也是可以運作，但 categories 就不行。</p>
+<p>本文以 tags 的使用方法進行操作。</p>
+<ol>
+<li><p>首先需要將每一個頁面屬性做好標籤分類。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">layout: post</span><br><span class="line">title:  &quot;使用 jekyll + Github 來建立一個部落格（二）&quot;</span><br><span class="line">date:   2018-09-10 14:50:00 +0800</span><br><span class="line">tags: [jekyll]</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<p> 像這一篇文章的開頭，我給他 jekyll 的標籤，若要多筆標籤請以 , 區分，並且在頭尾增加 [] 來表示陣列。如 [tagA, tagB]。</p>
+</li>
+<li><p>新增 tag.html 檔案來增加上方的 nav。</p>
+<p> 沒有標籤選擇頁面，做標籤功能也只是多餘的，當然名稱沒有規定一樣是自己決定。</p>
+<p> tag.html 先增加基本內容如下。</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">layout: default</span><br><span class="line">title: Tag</span><br><span class="line">permalink: &#x2F;tag</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<p> layout 為 default 時會掛在上方 nav 欄，title 為 nav 顯示名稱。</p>
+</li>
+<li><p>將 tag.html 增加行為。</p>
+<p> 程式碼是以 <a href="https://shopify.github.io/liquid/" target="_blank" rel="noopener">Liquid</a> 撰寫，有興趣可以去網站看。</p>
+<ol>
+<li><p>先篩選出所有標籤內容。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; &#39;&#123;% assign rawtags &#x3D; &quot;&quot; %&#39; &#125;&#125;&#125;</span><br><span class="line">&#123;&#123; &#39;&#123;% for post in site.posts %&#39; &#125;&#125;&#125;</span><br><span class="line">    &#123;&#123; &quot;&#123;% assign ttags &#x3D; post.tags | join:&#39;|&#39; | append:&#39;|&#39; %&quot; &#125;&#125;&#125;</span><br><span class="line">    &#123;&#123; &#39;&#123;% assign rawtags &#x3D; rawtags | append:ttags %&#39; &#125;&#125;&#125;</span><br><span class="line">&#123;&#123; &#39;&#123;% endfor %&#39; &#125;&#125;&#125;</span><br><span class="line">&#123;&#123; &quot;&#123;% assign rawtags &#x3D; rawtags | split:&#39;|&#39; | sort %&quot; &#125;&#125;&#125;</span><br><span class="line"></span><br><span class="line">&#123;&#123; &#39;&#123;% assign tags &#x3D; &quot;&quot; %&#39; &#125;&#125;&#125;</span><br><span class="line">&#123;&#123; &#39;&#123;% for tag in rawtags %&#39; &#125;&#125;&#125;</span><br><span class="line">    &#123;&#123; &#39;&#123;% if tag !&#x3D; &quot;&quot; %&#39; &#125;&#125;&#125;</span><br><span class="line">        &#123;&#123; &#39;&#123;% if tags &#x3D;&#x3D; &quot;&quot; %&#39; &#125;&#125;&#125;</span><br><span class="line">            &#123;&#123; &quot;&#123;% assign tags &#x3D; tag | split:&#39;|&#39; %&quot; &#125;&#125;&#125;</span><br><span class="line">        &#123;&#123; &#39;&#123;% endif %&#39; &#125;&#125;&#125;</span><br><span class="line">        &#123;&#123; &#39;&#123;% unless tags contains tag %&#39; &#125;&#125;&#125;</span><br><span class="line">            &#123;&#123; &quot;&#123;% assign tags &#x3D; tags | join:&#39;|&#39; | append:&#39;|&#39; | append:tag | split:&#39;|&#39; %&quot; &#125;&#125;&#125;</span><br><span class="line">        &#123;&#123; &#39;&#123;% endunless %&#39; &#125;&#125;&#125;</span><br><span class="line">    &#123;&#123; &#39;&#123;% endif %&#39; &#125;&#125;&#125;</span><br><span class="line">&#123;&#123; &#39;&#123;% endfor %&#39; &#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>將每一種標籤所帶有的文章顯示在網頁上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; &#39;&#123;% for tag in tags %&#39; &#125;&#125;&#125;</span><br><span class="line">    &lt;h2 id&#x3D;&quot;&#123;&#123; &#39;&#123;&#123; tag | slugify &#39; &#125;&#125;&#125;&#125;&quot;&gt;&#123;&#123; &#39;&#123;&#123; tag &#39; &#125;&#125;&#125;&#125;&lt;&#x2F;h2&gt;</span><br><span class="line">    &lt;ul&gt;</span><br><span class="line">    &#123;&#123; &#39;&#123;% for post in site.posts %&#39; &#125;&#125;&#125;</span><br><span class="line">        &#123;&#123; &#39;&#123;% if post.tags contains tag %&#39; &#125;&#125;&#125;</span><br><span class="line">        &lt;li&gt;</span><br><span class="line">        &lt;h3&gt;</span><br><span class="line">        &lt;a href&#x3D;&quot;&#123;&#123; &#39;&#123;&#123; post.url &#39; &#125;&#125;&#125;&#125;&quot;&gt;</span><br><span class="line">        &#123;&#123; &#39;&#123;&#123; post.title &#39; &#125;&#125;&#125;&#125;</span><br><span class="line">        &lt;small&gt;&#123;&#123; &#39;&#123;&#123; post.date | date_to_string &#39; &#125;&#125;&#125;&#125;&lt;&#x2F;small&gt;</span><br><span class="line">        &lt;&#x2F;a&gt;</span><br><span class="line">        &lt;&#x2F;h3&gt;</span><br><span class="line">        &lt;&#x2F;li&gt;</span><br><span class="line">        &#123;&#123; &#39;&#123;% endif %&#39; &#125;&#125;&#125;</span><br><span class="line">    &#123;&#123; &#39;&#123;% endfor %&#39; &#125;&#125;&#125;</span><br><span class="line">    &lt;&#x2F;ul&gt;</span><br><span class="line">&#123;&#123; &#39;&#123;% endfor %&#39; &#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>將每一種標籤顯示在網頁上</p>
+<p>做個索引方便查找。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; &#39;&#123;% for tag in tags %&#39; &#125;&#125;&#125;</span><br><span class="line">    &lt;a href&#x3D;&quot;#&#123;&#123; &#39;&#123;&#123; tag | slugify &#39; &#125;&#125;&#125;&#125;&quot;&gt; &#123;&#123; &#39;&#123;&#123; tag &#39; &#125;&#125;&#125;&#125;&lt;&#x2F;a&gt;</span><br><span class="line">&#123;&#123; &#39;&#123;% endfor %&#39; &#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li><p>完成。</p>
+</li>
+</ol>
+<p>若想做 categories，把上述內容改成 categories ，然後文章屬性的 tags 改成 categories 即可。</p>
+<h3 id="增加到每篇文章開頭"><a href="#增加到每篇文章開頭" class="headerlink" title="增加到每篇文章開頭"></a>增加到每篇文章開頭</h3><p>如果想將 tags 放置每個文章的開頭，就必需去 override 舊有的檔案。</p>
+<p>首先使用指令 <code>bundle show minima</code> 開啟資料夾，本文使用 minima 主題，若為其他請改為其他主題名稱。</p>
+<p>將裡面的內容除了版權及說明檔全貼在專案裡面。</p>
+<p>由於是針對 layout 改寫，所以只需要更改 post.html 即可。</p>
+<p>在你喜歡的位置上，放入以下程式碼即可完成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; &#39;&#123;% for tag in page.tags %&#39; &#125;&#125;&#125;</span><br><span class="line">    &lt;a href&#x3D;&quot;&#123;&#123; &#39;&#123;&#123; site.baseurl &#39; &#125;&#125;&#125;&#125;&#x2F;tag#&#123;&#123; &#39;&#123;&#123; tag | slugize &#39; &#125;&#125;&#125;&#125;&quot;&gt;&#123;&#123; &#39;&#123;&#123; tag &#39; &#125;&#125;&#125;&#125;&lt;&#x2F;a&gt;</span><br><span class="line">&#123;&#123; &#39;&#123;% unless forloop.last %&#39; &#125;&#125;&#125;&amp;nbsp;&#123;&#123; &#39;&#123;% endunless %&#39; &#125;&#125;&#125;</span><br><span class="line">&#123;&#123; &#39;&#123;% endfor %&#39; &#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你的專案結構與我不同，請將 tags 改成你 tags 的位置。</p>
+<p>參考文章<br><br><a href="https://codinfox.github.io/dev/2015/03/06/use-tags-and-categories-in-your-jekyll-based-github-pages/" target="_blank" rel="noopener">Use Tags and Categories in your Jekyll based Github Pages without plugins</a><br><br><a href="https://jekyllrb.com/docs/themes/#overriding-theme-defaults" target="_blank" rel="noopener">overriding-theme-defaults</a><br><br><a href="https://shopify.github.io/liquid/" target="_blank" rel="noopener">Liquid</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/09/12/2018-09-12-add-tag-to-jekyll/';
+var disqus_title = '使用 Jekyll + Github 來建立一個部落格（二）';
+var disqus_url = 'http://yoursite.com/2018/09/12/2018-09-12-add-tag-to-jekyll/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

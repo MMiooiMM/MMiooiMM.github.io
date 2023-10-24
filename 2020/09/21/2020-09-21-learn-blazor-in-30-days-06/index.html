@@ -1,0 +1,117 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 06 路由魔術 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-21</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 06 路由魔術</h1></div><div class="container post-content"><p>大致介紹完名為 Razor 的魔術材料後，要來一一填坑了，首先要介紹的就是<strong>路由</strong>魔術。</p>
+<hr>
+<p><strong>路由</strong>是一種檢查瀏覽器 URL 並將其匹配到要呈現的頁面的技術。當同一個應用程式中的 URL 變更時，透過改寫瀏覽器的 URL 來呈現相關的內容，而不像傳統<strong>真的</strong>切換頁面。</p>
+<h3 id="路由器元件"><a href="#路由器元件" class="headerlink" title="路由器元件"></a>路由器元件</h3><p>Blazor 是透過 <code>Router</code> 元件來處理路由，並根據指定的 <code>AppAssembly</code> 或者額外指定的 <code>AdditionalAssemblies</code> 來檢測可路由的元件。當瀏覽器導覽時，如果路由與網址相匹配，路由器就會攔截導覽並使用提取的 <code>RouteData</code> 來渲染其 <code>Found</code> 元件的內容，若匹配不到則渲染 <code>NotFound</code> 元件的內容。</p>
+<p>專案初始化時就會在 <code>App.razor</code> 產生以下內容：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@* App.razor *@</span><br><span class="line">&lt;Router AppAssembly=<span class="string">"@typeof(Program).Assembly"</span>&gt;</span><br><span class="line">    &lt;Found Context=<span class="string">"routeData"</span>&gt;</span><br><span class="line">        &lt;RouteView RouteData=<span class="string">"@routeData"</span> DefaultLayout=<span class="string">"@typeof(MainLayout)"</span> /&gt;</span><br><span class="line">    &lt;/Found&gt;</span><br><span class="line">    &lt;NotFound&gt;</span><br><span class="line">        &lt;LayoutView Layout=<span class="string">"@typeof(MainLayout)"</span>&gt;</span><br><span class="line">            &lt;p&gt;Sorry, there<span class="string">'s nothing at this address.&lt;/p&gt;</span></span><br><span class="line"><span class="string">        &lt;/LayoutView&gt;</span></span><br><span class="line"><span class="string">    &lt;/NotFound&gt;</span></span><br><span class="line"><span class="string">&lt;/Router&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>這邊簡單的介紹一下 <code>Router</code> 元件：</p>
+<ul>
+<li><p><code>AppAssembly</code> 用於設定或取得組件，該組件下的可路由元件能被路由檢測。</p>
+</li>
+<li><p><code>AdditionalAssemblies</code> 用於設定或取得額外的組件集，也就是當可路由元件在其他類別庫時能被檢測。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;Router</span><br><span class="line">    AppAssembly=<span class="string">"@typeof(Program).Assembly"</span></span><br><span class="line">    AdditionalAssemblies=<span class="string">"new[] &#123; typeof(Component1).Assembly &#125;"</span>&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;/Router&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Found</code> 用於設定或取得當路由匹配成功時所顯示的內容。</p>
+</li>
+<li><p><code>NotFound</code> 用於設定或取得當路由匹配失敗時所顯示的內容。</p>
+</li>
+</ul>
+<p><code>RouteView</code> 顯示指定的頁面元件，並可設定預設的版面配置。</p>
+<ul>
+<li><p><code>RouteData</code> 設定或取得路由資料，這決定了顯示的頁面以及提供給該頁面的參數值。</p>
+</li>
+<li><p><code>DefaultLayout</code> 設定或取得預設的版面配置，當指定的頁面元件無設定版面配置時使用，會在後面介紹<strong>版面配置</strong>時詳細說明。</p>
+</li>
+</ul>
+<h3 id="建立元件"><a href="#建立元件" class="headerlink" title="建立元件"></a>建立元件</h3><p>若要將元件變成可路由元件，我們需要透過 <code>@page</code> 指示詞，但在此之前，先來建立一個 <code>CustomPage.razor</code> 檔案吧！</p>
+<p>一樣透過 Visual Studio 2019 的畫面來做示範，首先需開啟方案總管並對 <code>Pages</code> 資料夾點擊右鍵，加入<strong>Razor 元件</strong>。</p>
+<p><img src="/images/2020-09-21/select-create-razor-page.png" alt="/images/2020-09-21/select-create-razor-page.png"></p>
+<p>然後確認建立的是<strong>Razor 元件</strong>並取名為 <code>CustomPage</code> 或者任何你喜歡的名字後按下新增。 </p>
+<p><img src="/images/2020-09-21/create-razor-page.png" alt="/images/2020-09-21/create-razor-page.png"></p>
+<p>咒術師可以輸入 <code>dotnet new razorcomponent -o Pages -n CustomPage</code> 來做一樣的事情。</p>
+<h3 id="可路由元件"><a href="#可路由元件" class="headerlink" title="可路由元件"></a>可路由元件</h3><p>將一個元件變成可路由元件需要透過 <code>@page</code> 指示詞，也就是設定該頁面元件的進入點：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@* CustomPage.razor *@</span><br><span class="line">@page <span class="string">"/custompage"</span></span><br><span class="line">@page <span class="string">"/custompage2"</span></span><br><span class="line">@page <span class="string">"/custompage/&#123;text&#125;"</span></span><br><span class="line"></span><br><span class="line">&lt;h1&gt;Blazor <span class="keyword">is</span> @Text!&lt;/h1&gt;</span><br><span class="line"></span><br><span class="line">@code &#123;</span><br><span class="line">    [<span class="meta">Parameter</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Text &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnInitialized</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Text = Text ?? <span class="string">"fantastic"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到使用了三個 <code>@page</code>，因為進入點可以不只一個！也就是當路由為 <code>/custompage</code> 或 <code>/custompage2</code> 以及 <code>/custompage/xxx</code> 都會進入這個元件。這邊的 <code>{text}</code> 為<strong>路由參數</strong>，路由器會將路由參數的名稱填入到相同名稱的元件參數(不區分大小寫)。</p>
+<p><strong>需注意：路由參數並不支援選擇性參數且不能包含空白</strong></p>
+<p>使用路由參數時也可以加上條件約束，來強制比對路由參數與元件參數類型是否一致，若不一致則視為路由匹配失敗。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@page <span class="string">"/custompage"</span></span><br><span class="line">@page <span class="string">"/custompage2"</span></span><br><span class="line">@page <span class="string">"/custompage/&#123;text:int&#125;"</span></span><br><span class="line"></span><br><span class="line">&lt;h1&gt;Blazor <span class="keyword">is</span> @Text!&lt;/h1&gt;</span><br><span class="line"></span><br><span class="line">@code &#123;</span><br><span class="line">    [<span class="meta">Parameter</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Text &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnInitialized</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Text = Text ?? <span class="string">"fantastic"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>當路由為 <code>/custompage/1</code> 或 <code>/custompage/1000</code> 能進入這個元件，但 <code>/custompage/text</code> 則無法進入。</p>
+<p>而路由參數支援的條件約束有：</p>
+<table>
+<thead>
+<tr>
+<th align="left">條件約束</th>
+<th align="left">範例</th>
+<th align="left">範例符合的項目</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">bool</td>
+<td align="left"><code>{active:bool}</code></td>
+<td align="left"><code>true</code>, <code>FALSE</code></td>
+</tr>
+<tr>
+<td align="left">datetime</td>
+<td align="left"><code>{date: datetime}</code></td>
+<td align="left"><code>2020-09-21</code>, <code>2020-09-21 20:20pm</code></td>
+</tr>
+<tr>
+<td align="left">decimal</td>
+<td align="left"><code>{price:decimal}</code></td>
+<td align="left"><code>29.99</code>, <code>-1,000,000</code></td>
+</tr>
+<tr>
+<td align="left">double</td>
+<td align="left"><code>{weight:double}</code></td>
+<td align="left"><code>1.234</code></td>
+</tr>
+<tr>
+<td align="left">float</td>
+<td align="left"><code>{weight:float}</code></td>
+<td align="left"><code>12.34</code></td>
+</tr>
+<tr>
+<td align="left">guid</td>
+<td align="left"><code>{id:guid}</code></td>
+<td align="left"><code>CD2C1638-1638-72D5-1638-DEADBEEF1638</code>, <code>{CD2C1638-1638-72D5-1638-DEADBEEF1638}</code></td>
+</tr>
+<tr>
+<td align="left">int</td>
+<td align="left"><code>{id:int}</code></td>
+<td align="left"><code>1</code></td>
+</tr>
+<tr>
+<td align="left">long</td>
+<td align="left"><code>{id:long}</code></td>
+<td align="left"><code>123</code></td>
+</tr>
+</tbody></table>
+<p>為了確保 URL 可以轉換成 CLR 類型的路由條件約束(如 <code>int</code>, <code>DateTime</code>)，一律使用不因國別而異的文化特性，並假設 URL 不可當地語系化。</p>
+<hr>
+<p>以上就是 Blazor WebAssembly 針對路由的設定與處理。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/fundamentals/routing?view=aspnetcore-3.1" target="_blank" rel="noopener">ASP.NET Core Blazor 路由</a><br><a href="https://docs.microsoft.com/zh-tw/dotnet/architecture/blazor-for-web-forms-developers/pages-routing-layouts" target="_blank" rel="noopener">頁面、路由和版面配置</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/21/2020-09-21-learn-blazor-in-30-days-06/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 06 路由魔術';
+var disqus_url = 'http://yoursite.com/2020/09/21/2020-09-21-learn-blazor-in-30-days-06/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

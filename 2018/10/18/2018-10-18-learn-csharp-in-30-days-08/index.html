@@ -1,0 +1,99 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>.NET 後端起手式 30天認識 C# - Day 08 型別常用方法 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/2019-iT-%E9%82%A6%E5%B9%AB%E5%BF%99%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">2019 iT 邦幫忙鐵人賽</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2018-10-18</div></div></div><div class="container post-header"><h1>.NET 後端起手式 30天認識 C# - Day 08 型別常用方法</h1></div><div class="container post-content"><h2 id="DAY-08-型別常用方法"><a href="#DAY-08-型別常用方法" class="headerlink" title="DAY 08 型別常用方法"></a>DAY 08 型別常用方法</h2><h3 id="型別常用方法"><a href="#型別常用方法" class="headerlink" title="型別常用方法"></a>型別常用方法</h3><p>分享一些個人常用的方法，本文會講解用法與用途，讓新手上手時可以快速使用。</p>
+<h3 id="數值型別"><a href="#數值型別" class="headerlink" title="數值型別"></a>數值型別</h3><h4 id="Parse"><a href="#Parse" class="headerlink" title="Parse"></a>Parse</h4><p>數值型別都會有一個 Parse 方法，可以使字串轉換成數字型別，若字串內容不是數字則會使程式掛掉如</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a1 = <span class="keyword">int</span>.Parse (<span class="string">"16"</span>); <span class="comment">// 成功得到 16</span></span><br><span class="line"><span class="keyword">int</span> a2 = <span class="keyword">int</span>.Parse (<span class="string">"5.16"</span>); <span class="comment">// 成功得到 5 因為是 int 沒有小數點</span></span><br><span class="line"><span class="keyword">int</span> a3 = <span class="keyword">int</span>.Parse (<span class="string">"1.2.3"</span>); <span class="comment">// 失敗 因為 1.2.3 不是一個數字</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">double</span> d1 = <span class="keyword">double</span>.Parse(<span class="string">"5.16"</span>) 成功得到 <span class="number">5.16</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="TryParse"><a href="#TryParse" class="headerlink" title="TryParse"></a>TryParse</h4><p>當欲轉換成數字的內容是使用者定義的話，我們無法限制他輸入的內容，所以我們並需改用另一種方法 TryParse，這方法傳回的值是 bool，並給出一個被 out 寫入的變數如</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> number = <span class="number">1</span>; <span class="comment">// 先定義一個 number 去接收 TryParse 成功轉換後的值。</span></span><br><span class="line"><span class="keyword">bool</span> b1 = <span class="keyword">int</span>.TryParse(<span class="string">"1.2.3"</span>, <span class="keyword">out</span> number); <span class="comment">// 得到 False 因為無法轉換 number 還是 1</span></span><br><span class="line"><span class="keyword">bool</span> b2 = <span class="keyword">int</span>.TryParse(<span class="string">"6"</span>, <span class="keyword">out</span> number); <span class="comment">// 得到 True 所以 number 變成 6</span></span><br></pre></td></tr></table></figure>
+
+<p>此方法可以當作過濾錯誤的輸入值或資料來源的錯誤資料如</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> input = Console.ReadLine ();</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">int</span>.TryParse (input, <span class="keyword">out</span> <span class="keyword">int</span> number)) &#123;</span><br><span class="line">  Console.WriteLine (<span class="string">$"你輸入的是數字<span class="subst">&#123;number&#125;</span>"</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  Console.WriteLine (<span class="string">"你輸入的不是數字"</span>);</span><br><span class="line">&#125;</span><br><span class="line">Console.ReadKey ();</span><br></pre></td></tr></table></figure>
+
+<p>out 寫入的變數也可以在呼叫方法時初始化。</p>
+<h4 id="ToString"><a href="#ToString" class="headerlink" title="ToString"></a>ToString</h4><p>把數值轉換成字串</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> number = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">string</span> str = number.ToString();</span><br></pre></td></tr></table></figure>
+
+<p>上面講的方法都是型別的靜態方法，也就是由型別 int. 或者 double. 所呼叫的方法，而 ToString 則是型別的原生方法，也就是由變數 number. 所呼叫的方法。</p>
+<p>題外話：我不知道用原生方法這個詞好不好，主要是為了與之後的擴充方法做個差異。</p>
+<p>從數值轉換成字串時，我們可以帶參數使轉換的字串是貨幣、百分比或者換成其他進制表示等。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> number = <span class="number">516</span>;</span><br><span class="line"><span class="keyword">string</span> currency = number.ToString (<span class="string">"C"</span>);</span><br><span class="line">Console.WriteLine (currency);</span><br><span class="line"><span class="keyword">string</span> percent = number.ToString (<span class="string">"P"</span>);</span><br><span class="line">Console.WriteLine (percent);</span><br><span class="line"><span class="keyword">string</span> hex = number.ToString (<span class="string">"X"</span>);</span><br><span class="line">Console.WriteLine (hex);</span><br><span class="line">Console.ReadKey ();</span><br></pre></td></tr></table></figure>
+
+<p>更多的轉換方式可以到參考連結看</p>
+<p>個人習慣如果不是要轉成特定樣子，而是單純的使數字轉型，則會使用隱性轉型的方式</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> number = <span class="number">6</span></span><br><span class="line"><span class="keyword">string</span> str = number + <span class="string">""</span>;</span><br></pre></td></tr></table></figure>
+
+<p>加一個空字串，因為運算子 + 使 number 變成字串後與空字串相加成 str。</p>
+<h3 id="字串"><a href="#字串" class="headerlink" title="字串"></a>字串</h3><p>字串的處理就會比數值多很多了，如尋找、替換、切割、補零等等功能。</p>
+<h4 id="Format"><a href="#Format" class="headerlink" title="Format"></a>Format</h4><p>主要是字串的拼接</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> a1 = <span class="string">"555"</span>;</span><br><span class="line"><span class="keyword">string</span> a2 = <span class="string">"666"</span>;</span><br><span class="line"><span class="keyword">string</span> a3 = <span class="keyword">string</span>.Format (<span class="string">"a1 = &#123;0&#125;, a2 = &#123;1&#125;"</span>, a1, a2);</span><br><span class="line">Console.WriteLine (a3); <span class="comment">// a1 = 555, a2 = 666</span></span><br></pre></td></tr></table></figure>
+
+<p>Format 是用括弧內的數字，從 0 開始數對照到後面的引數內容，要注意的是括弧的數值一定要對照到後面的引數，無法像這樣<code>string.Format (&quot;a1 = {8}&quot;, a1);</code>，找不到第 8 + 1 個引數會使程式錯誤，但如果是給予超過數量的引數不會造成程式錯誤。</p>
+<p>而講到 Format 是不是似曾相識的感覺，很像我之前寫的<code>$</code>語句，在字串前面加入<code>$</code>就是一種 Format 的方法，可以把上面的程式碼改成<code>$&quot;a1 = {a1}&quot;;</code>，是不是更好讀了，雖然實際上還是做了跟 Format 一樣的行為，但讓程式碼讀得時候，如果引數一多就不用在那邊連連看了。</p>
+<p>想知道更多可以參考連結的字串內插補點。</p>
+<p>題外話：因為<code>$</code>我本身不再用 Format，對我在初學時是沒有看過這符號的。</p>
+<h4 id="Null-檢查方式"><a href="#Null-檢查方式" class="headerlink" title="Null 檢查方式"></a>Null 檢查方式</h4><p><strong>String.IsNullOrEmpty (value)</strong></p>
+<p>相當於 (value == null || value == String.Empty)</p>
+<p><strong>String.IsNullOrWhiteSpace (value)</strong></p>
+<p>相當於 (String.IsNullOrEmpty (value) || value.Trim ().Length == 0)</p>
+<p>為什麼需要做 Null 檢查呢？因為原生方法如果變數內容是 null 的話是會報錯的，這邊簡單比較兩種方式的差別，個人是都只用最後一種啦。</p>
+<h4 id="Contains"><a href="#Contains" class="headerlink" title="Contains"></a>Contains</h4><p>這邊開始就是原生方法了，檢查字串是不是包含某個字元或字串，傳回值為 bool。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> str1 = <span class="string">"ABC"</span>;</span><br><span class="line"><span class="keyword">bool</span> b1 = str1.Contains (<span class="string">"BC"</span>);</span><br><span class="line"><span class="keyword">bool</span> b2 = str1.Contains (<span class="string">"CB"</span>);</span><br><span class="line">Console.WriteLine (b1); <span class="comment">// True</span></span><br><span class="line">Console.WriteLine (b2); <span class="comment">// False</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="PadLeft-amp-PadRight"><a href="#PadLeft-amp-PadRight" class="headerlink" title="PadLeft &amp; PadRight"></a>PadLeft &amp; PadRight</h4><p>補充字元，因為數值型態前面不會帶 0，如果需要以 0 開頭的話則需要轉換成字串，並將開頭補 0，或者補空白排版等用途。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> str = <span class="string">"516"</span>.PadLeft (<span class="number">5</span>, <span class="string">'0'</span>);</span><br><span class="line">Console.WriteLine (str); <span class="comment">// 00516</span></span><br></pre></td></tr></table></figure>
+
+<p>前面一位為數量，後面為補上的字元，可不填，不填時為補充空白。</p>
+<p>PadRight 則是從右邊補字元。</p>
+<h4 id="Replace"><a href="#Replace" class="headerlink" title="Replace"></a>Replace</h4><p>取代字串內容，如果需要將 1 2 3 改成中文數字一、二、三。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> str = <span class="string">"123"</span>.Replace (<span class="string">"1"</span>, <span class="string">"一"</span>).Replace (<span class="string">"2"</span>, <span class="string">"二"</span>).Replace (<span class="string">"3"</span>, <span class="string">"三"</span>);</span><br><span class="line">Console.WriteLine (str); <span class="comment">// 一二三</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Split"><a href="#Split" class="headerlink" title="Split"></a>Split</h4><p>字串切割。</p>
+<h5 id="string-Split-params-char-separator"><a href="#string-Split-params-char-separator" class="headerlink" title="string.Split (params char[] separator)"></a>string.Split (params char[] separator)</h5><p>用字元做為切割，不加任何條件版本。</p>
+<h5 id="string-Split-string-separator-int-count-StringSplitOptions-options"><a href="#string-Split-string-separator-int-count-StringSplitOptions-options" class="headerlink" title="string.Split (string[] separator, int count, StringSplitOptions options)"></a>string.Split (string[] separator, int count, StringSplitOptions options)</h5><p><strong>separator 為切割的字元組或字串組 char[] or string[]</strong></p>
+<p><strong>count 為分割最大數量</strong></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"stringsplit"</span>.Split (<span class="keyword">new</span> <span class="keyword">char</span>[]&#123;<span class="string">'s'</span>&#125;, <span class="number">1</span>); <span class="comment">// &#123;"stringsplit"&#125;</span></span><br><span class="line"><span class="string">"stringsplit"</span>.Split (<span class="keyword">new</span> <span class="keyword">char</span>[]&#123;<span class="string">'s'</span>&#125;, <span class="number">2</span>); <span class="comment">// &#123;"","tringsplit"&#125;</span></span><br><span class="line"><span class="string">"stringsplit"</span>.Split (<span class="keyword">new</span> <span class="keyword">char</span>[]&#123;<span class="string">'s'</span>&#125;, <span class="number">3</span>); <span class="comment">// &#123;"","tring","plit"&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>options 為是否包含空白字元</strong></p>
+<ul>
+<li>StringSplitOptions.<strong>None</strong> =&gt; (預設)包含</li>
+<li>StringSplitOptions.<strong>RemoveEmptyEntries</strong> =&gt; 不包含</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"stringsplit"</span>.Split (<span class="keyword">new</span> <span class="keyword">char</span>[] &#123; <span class="string">'s'</span> &#125;, <span class="number">2</span>, StringSplitOptions.RemoveEmptyEntries); <span class="comment">// &#123;"tring","plit"&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Substring"><a href="#Substring" class="headerlink" title="Substring"></a>Substring</h4><p>擷取字串。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> str = <span class="string">"123456789"</span>.Substring (<span class="number">1</span>, <span class="number">5</span>);</span><br><span class="line">Console.WriteLine (str); <span class="comment">// 23456</span></span><br></pre></td></tr></table></figure>
+
+<p>從 0 開始數，所以 1 的位置是 2，然後往後數五個字元。</p>
+<p>也可以不加數量</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> str = <span class="string">"123456789"</span>.Substring (<span class="number">1</span>);</span><br><span class="line">Console.WriteLine (str); <span class="comment">// 23456789</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Trim"><a href="#Trim" class="headerlink" title="Trim"></a>Trim</h4><p>移除開頭與結尾字元，直到下個字元不等於該字元，如果不給引數則移除空白。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> str = <span class="string">"9129345678999"</span>.Trim (<span class="string">'9'</span>);</span><br><span class="line">Console.WriteLine (str); <span class="comment">// 129345678</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>TrimStart</strong> 只移除開頭字元</p>
+<p><strong>TrimEnd</strong> 只移除結尾字元</p>
+<h3 id="一些小結論"><a href="#一些小結論" class="headerlink" title="一些小結論"></a>一些小結論</h3><p>今天大致上介紹了本人比較常見的型別方法，雖然還滿猶豫要寫出來的，但日後使用的時候又需要解釋，不如就…</p>
+<p>昨天在講解方法的時候沒有提到，VSCode 可以按 F12 查看方法，所以上述的所有方法都可以按 F12 顯示類別的方法，因為是引用 dll 所以沒有完整的 code，但可以看該類別的所有方法，所以除了我舉例的這些還有很多方法。</p>
+<p>類別是什麼之後也會提到，還有如何增加類別的原生方法，也就是擴充方法。</p>
+<p>感謝閱讀。</p>
+<p>參考連結<br><a href="https://docs.microsoft.com/zh-tw/dotnet/standard/base-types/standard-numeric-format-strings" target="_blank" rel="noopener">標準數值格式字串 | Microsoft Docs</a><br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/language-reference/tokens/interpolated" target="_blank" rel="noopener">字串內插補點</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/10/18/2018-10-18-learn-csharp-in-30-days-08/';
+var disqus_title = '.NET 後端起手式 30天認識 C# - Day 08 型別常用方法';
+var disqus_url = 'http://yoursite.com/2018/10/18/2018-10-18-learn-csharp-in-30-days-08/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

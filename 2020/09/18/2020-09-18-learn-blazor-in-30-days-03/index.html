@@ -1,0 +1,83 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 03 魔術道具 - Razor 介紹 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-18</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 03 魔術道具 - Razor 介紹</h1></div><div class="container post-content"><p>在介紹魔術前，要先跟大家展示的是魔術道具，不了解道具的魔術師，不是好的魔術師。</p>
+<p><code>Blazor = Browser + Razor</code> </p>
+<p>Browser 是瀏覽器，而 Razor 是什麼呢？Razor 是將伺服器程式碼內嵌到網頁中的標記語法，透過 Razor 標記、C# 和 HTML 所組合成的，而我們的元件實作於 Razor 檔(<code>.razor</code>)，所以 Razor 可說是至關重要啊！</p>
+<p>Razor 語法使用 <code>@</code> 將 HTML 檔案轉譯成 C#，Razor 會評估 C# 運算式並輸出成 HTML，只有當 <code>@</code> 後面接著 Razor 保留關鍵字時，它才會轉換成 Razor 特定的標記，否則只會轉換成一般 C#。</p>
+<p>若只是想在 HTML 中使用 <code>@</code> 符號而不想轉成 C# 時，就需要使用第二個 @ 符號來進行跳脫字元：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;p&gt;@@文字&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>HTML 屬性及含有電子郵件地址的內容不會將 <code>@</code> 符號視為轉換字元，下列範例中的電子郵件地址並不會藉由剖析而變成 Razor 語句：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=<span class="string">"mailto:mio093611@gmail.com"</span>&gt;mio093611@gmail.com&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="隱式-Razor-運算式"><a href="#隱式-Razor-運算式" class="headerlink" title="隱式 Razor 運算式"></a>隱式 Razor 運算式</h3><p>透過將變數前面加一個 <code>@</code> 來轉換成 Razor 語句：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;p&gt;@DateTime.Now&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>除了連接 C# 關鍵字 <code>await</code> 與具有明確結束字元的陳述式外，隱式運算式是不能包含空格的！</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;p&gt;@<span class="keyword">await</span> DoSomethingAsync()&lt;/p&gt;</span><br><span class="line">&lt;p&gt;@DoSomething(<span class="number">1</span>, <span class="number">2</span>)&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>注意：隱式運算式<strong>不能</strong>包含 C# 泛型，因為括弧 (&lt;&gt;) 內的字元會解譯為 HTML 標籤，所以下列程式碼是無效的：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;p&gt;@GenericMethod&lt;<span class="keyword">int</span>&gt;()&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="顯式-Razor-運算式"><a href="#顯式-Razor-運算式" class="headerlink" title="顯式 Razor 運算式"></a>顯式 Razor 運算式</h3><p>透過將 <code>@()</code> 內的所有內容轉換成 Razor 語句：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@* 顯示 <span class="number">7</span> 天前的時間 *@</span><br><span class="line">&lt;p&gt;@(DateTime.Now - TimeSpan.FromDays(<span class="number">7</span>))&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>顯式運算式可以防止 Razor 誤判電子信箱：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;p&gt;mio@(<span class="number">123</span>)&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>以及使用 C# 泛型：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;p&gt;@(GenericMethod&lt;<span class="keyword">int</span>&gt;())&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Razor-程式碼區塊"><a href="#Razor-程式碼區塊" class="headerlink" title="Razor 程式碼區塊"></a>Razor 程式碼區塊</h3><p>Razor 程式碼區塊會以 <code>@</code> 開頭，並以 <code>{}</code> 括住表示範疇，不同於運算式，程式碼區塊內的 C# 程式碼並不會被轉譯。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    <span class="keyword">var</span> mio = <span class="keyword">new</span> Person(<span class="string">"Joe"</span>, <span class="number">26</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&lt;p&gt;Age@(mio.Age)&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>也可以放置區域函式，但不建議這樣使用，明天的內容會提及區域函式該怎麼寫。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">RenderName</span>(<span class="params"><span class="keyword">string</span> name</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        &lt;p&gt;Name: &lt;strong&gt;@name&lt;/strong&gt;&lt;/p&gt;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    RenderName(<span class="string">"Mahatma Gandhi"</span>);</span><br><span class="line">    RenderName(<span class="string">"Martin Luther King, Jr."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程式碼會轉譯成下列 HTML：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;p&gt;Name: &lt;strong&gt;Mahatma Gandhi&lt;/strong&gt;&lt;/p&gt;</span><br><span class="line">&lt;p&gt;Name: &lt;strong&gt;Martin Luther King, Jr.&lt;/strong&gt;&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>若想在程式碼區塊中改寫回 HTML，可以直接在區塊內使用 HTML 標籤就能自動轉回 HTML：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    <span class="keyword">var</span> inCSharp = <span class="literal">true</span>;</span><br><span class="line">    &lt;p&gt;Now <span class="keyword">in</span> HTML, was <span class="keyword">in</span> C<span class="meta"># @inCSharp&lt;/p&gt;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>若擔心使用 HTML 標籤會破壞 HTML 結構，可以使用 <code>@:</code> 來進行單行轉回 HTML：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    <span class="keyword">var</span> inCSharp = <span class="literal">true</span>;</span><br><span class="line">    @:Now <span class="keyword">in</span> HTML, was <span class="keyword">in</span> C<span class="meta"># @inCSharp</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或使用 <code>&lt;text&gt;</code> 標籤來進行多行轉換：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    <span class="keyword">var</span> inCSharp = <span class="literal">true</span>;</span><br><span class="line">    &lt;text&gt;</span><br><span class="line">        Now <span class="keyword">in</span> HTML, was <span class="keyword">in</span> C<span class="meta"># @inCSharp</span></span><br><span class="line">    &lt;/text&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以你也可以這樣寫：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">"Mio"</span>;</span><br><span class="line">    &lt;text&gt;</span><br><span class="line">        &lt;p&gt;這裡的名稱是 @name&lt;/p&gt;</span><br><span class="line">        @&#123;</span><br><span class="line">            name = <span class="string">"Rascal"</span>;</span><br><span class="line">            @: 這裡的名稱是 @name, 且沒有 HTML 標籤</span><br><span class="line">            &lt;text&gt;</span><br><span class="line">                &lt;p&gt;這裡的名稱是 @name, 並被 p 包住&lt;/p&gt;</span><br><span class="line">                @&#123;</span><br><span class="line">                    name = <span class="string">"Kabimon"</span>;</span><br><span class="line">                    &lt;text&gt;</span><br><span class="line">                       &lt;p&gt;這裡的名稱是 @name, 是最底層的 HTML !!!&lt;/p&gt;</span><br><span class="line">                    &lt;/text&gt;</span><br><span class="line">                &#125;</span><br><span class="line">            &lt;/text&gt;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;/text&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>將 HTML 轉成 C#，再把 C# 轉回 HTML，再轉轉轉轉轉都是合法的語句，但非常不建議這樣做。</p>
+<h3 id="註解"><a href="#註解" class="headerlink" title="註解"></a>註解</h3><p>有兩種方式可以在 razor 檔案中註解：</p>
+<ol>
+<li>轉成 C# 在使用 C# 的註解方式。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    <span class="comment">/* C# comment */</span></span><br><span class="line">    <span class="comment">// Another C# comment</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>透過 <code>@* *@</code> 來劃定註解，使 Razor 轉譯時會移除註解內容。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@*  *@</span><br></pre></td></tr></table></figure>
+
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/mvc/views/razor?view=aspnetcore-3.1" target="_blank" rel="noopener">Razor ASP.NET Core 的語法參考</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/18/2020-09-18-learn-blazor-in-30-days-03/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 03 魔術道具 - Razor 介紹';
+var disqus_url = 'http://yoursite.com/2020/09/18/2020-09-18-learn-blazor-in-30-days-03/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

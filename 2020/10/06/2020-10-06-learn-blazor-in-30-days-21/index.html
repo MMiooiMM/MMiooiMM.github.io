@@ -1,0 +1,48 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 21 魔術技巧 - HTTP 要求與回應 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-10-06</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 21 魔術技巧 - HTTP 要求與回應</h1></div><div class="container post-content"><p>網頁內容如果不與後端互動大致上，每次操作都會看到相似的內容，而且難以調整，所以今天要來介紹跟後端互動的方法。</p>
+<hr>
+<p>在昨天的介紹可以知道，Blazor WebAssembly 預設就會幫我們設定 HttpClient 服務來與 URIs 傳送要求及接收回應，除此之外範本專案建立時，也會在 <code>_imports.razor</code> 使用 <code>System.Net.Http.Json</code> 命名空間，而今天主要以介紹此命名空間帶來的擴充功能。</p>
+<p>在透過 HTTP 要求與回應傳遞資料時，處理 JSON 序列化與反序列化是一件很麻煩的事情，雖然基本上都是透過套件做好底層的行為並提供方法，只管用就對了，但在過往的 .NET 框架都是需要在自行處理 <code>HttpResponseMessage</code> 物件，並且將 JSON 字串轉型成指定型別，而 <code>System.Net.Http.Json</code> 可以說是把這兩件事情包起來了，讓這整件事更流暢。</p>
+<p>而在使用 HTTP 要求時，如果後端是走 Restful API 的設計風格勢必少不了 HTTP 動詞的選擇，而此擴充套件提供了 <code>get</code>, <code>post</code>, <code>put</code> 三種動詞的對應方法：</p>
+<ul>
+<li><p><code>GetFromJsonAsync</code>: 以非同步的方式，將 GET 要求傳送至指定的 URI，並將回應主體(Response Body)以 JSON 反序列化後傳回結果，因為有多載方法，以下參數並非所有同名方法皆有，其參數為：</p>
+<ul>
+<li>client(<code>HttpClient</code>): 用來傳送要求的用戶端。</li>
+<li>requestUri(<code>string</code>): 傳送要求的目標 URI。</li>
+<li>type(<code>Type</code>): 反序列化傳回的物件類型，若是泛型方法則不用設定。</li>
+<li>options(<code>JsonSerializerOptions</code>): 控制反序列化的行為選項。</li>
+<li>cancellationToken(<code>CancellationToken</code>): 取消語彙基元，可由其他物件或執行緒用來接收取消通知。</li>
+</ul>
+<p>而因為已經反序列化過了，所以傳回值只有兩種 <code>Task&lt;object&gt;</code> 與 <code>Task&lt;TValue&gt;</code>。</p>
+</li>
+<li><p><code>PostAsJsonAsync</code>/<code>PutAsJsonAsync</code>：以非同步的方式，將 POST/PUT 要求傳送至指定的 URI，並將要求主體(Request Body)的內容序列化為 JSON 字串，而參數用途基本與前者一致，但傳回型別為 <code>Task&lt;HttpResponseMessage&gt;</code>。</p>
+</li>
+</ul>
+<p>而這邊我就以 <a href="https://jsonplaceholder.typicode.com/" target="_blank" rel="noopener">https://jsonplaceholder.typicode.com/</a> 的假 API 示範，如何透過 HTTP 要求取得資料內容：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@inject HttpClient HttpClient;</span><br><span class="line"></span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="keyword">private</span> List&lt;TodoItem&gt; todoItems;</span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">async</span> Task <span class="title">OnInitializedAsync</span>(<span class="params"></span>)</span> =&gt; </span><br><span class="line">        todoItems = <span class="keyword">await</span> HttpClient.GetFromJsonAsync&lt;List&lt;TodoItem&gt;&gt;(<span class="string">"https://jsonplaceholder.typicode.com/todos"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這樣在元件初始化後，就會觸發 <code>HttpClient.GetFromJsonAsync</code> 取得資料並填入 <code>todoItems</code> 變數中，是不是很簡單呀？</p>
+<hr>
+<p>以上就是簡單的介紹 <code>HttpClient</code> 的使用方法，但日常使用上，有些 API 可能需要夾帶驗證資料如 Token，那麼今天所教的內容可能就派不上用場了，還是需要自行組裝 <code>HttpResponseMessage</code> 物件，如果不知道如何下手組裝，也可以參考下方的參考資料，對了今天的詳細程式碼在<a href="https://github.com/MMiooiMM/learn-blazor-in-30-days-sample/commit/5ac534333cb352677af0fd9bc891f4af3f612e79" target="_blank" rel="noopener">範本程式碼 - Day21</a>唷。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/en-us/aspnet/core/blazor/call-web-api?view=aspnetcore-3.1" target="_blank" rel="noopener">從 WebAssembly 呼叫 Web API</a><br><a href="https://stackoverflow.com/questions/57608328/blazor-adding-httpclienthandler-to-add-jwt-to-http-header-on-requests" target="_blank" rel="noopener">Blazor Adding HttpClientHandler to add Jwt to HTTP Header on requests</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/10/06/2020-10-06-learn-blazor-in-30-days-21/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 21 魔術技巧 - HTTP 要求與回應';
+var disqus_url = 'http://yoursite.com/2020/10/06/2020-10-06-learn-blazor-in-30-days-21/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

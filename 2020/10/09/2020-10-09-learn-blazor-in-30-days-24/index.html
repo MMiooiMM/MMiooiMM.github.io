@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 24 組態魔術 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-10-09</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 24 組態魔術</h1></div><div class="container post-content"><p>今天要來介紹的是組態設定，也就是透過載入組態檔來取得值，使得外部能夠透過修改組態檔來影響程式的運作。</p>
+<hr>
+<p>Blazor WebAssembly 預設會從應用程式中載入 <code>wwwroot/appsettings.json</code> 與 <code>wwwroot/appsettings.{ENVIRONMENT}.json</code> 組態檔，若想要載入這些檔名以外的組態也可以參考文章後面的方式自行添加。</p>
+<p>由於範本專案並沒有包含組態檔，我們先來建立 <code>wwwroot/appsettings.json</code> 吧！</p>
+<p>內容為：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// appsettings.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"message"</span>: <span class="string">"Hello from config!"</span>,</span><br><span class="line">  <span class="attr">"test"</span>: &#123;</span><br><span class="line">    <span class="attr">"message"</span>: <span class="string">"Hello2 from config!"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而元件只需要注入 <code>IConfiguration</code> 服務就可以取得組態資料了：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@* Day24Sample.razor *@</span><br><span class="line">@page <span class="string">"/day24sample"</span></span><br><span class="line">@<span class="keyword">using</span> Microsoft.Extensions.Configuration</span><br><span class="line">@inject IConfiguration Configuration</span><br><span class="line">&lt;h3&gt;Day24Sample&lt;/h3&gt;</span><br><span class="line"></span><br><span class="line">&lt;p&gt;@Configuration[<span class="string">"message"</span>]&lt;/p&gt;</span><br><span class="line">&lt;p&gt;@Configuration[<span class="string">"test:message"</span>]&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+
+<p>這樣就可以在畫面中看到從組態檔來的 <code>Hello from config!</code> 與 <code>Hello2 from config!</code> 文字，聰明的你看程式碼應該就能發現階層關係是以 <code>:</code> 來做劃分，如想要取得 <code>test</code> 物件下的 <code>message</code>，則表示的字串為 <code>test:message</code>，如此類推。</p>
+<p>但你是否跟我一樣，對這種使用方式感覺有點美中不足，能不能像 <code>.NET Core API</code> 那樣，使用 <code>services.Configure&lt;TestConfig&gt;(Configuration.GetSection(&quot;TestConfig&quot;));</code> 並透過 <code>IOptions&lt;TestConfig&gt;</code> 來取值？使得取得組態資料這件事情能夠透過強型別來管理？</p>
+<p>遺憾的是我目前並沒有找到對應的方式來完成這件事情，但可以借鑑昨天的技巧，我們直接把組態內容與組態類別對應後註冊到 DI Container，這樣元件就可以透過注入該實體來取得組態內容，方法如：</p>
+<p>建立一個組態類別：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TestConfig.cs</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestConfig</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">string</span> Message &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>從組態取得對應內容並註冊到 DI Container：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">builder.Services.AddSingleton(provider =&gt;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">var</span> config = provider.GetService&lt;IConfiguration&gt;();</span><br><span class="line">  <span class="keyword">return</span> config.GetSection(<span class="string">"test"</span>).Get&lt;TestConfig&gt;();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>之後我們就可以透過注入 <code>TestConfig</code> 來取得組態中 <code>test</code> 物件下的內容，是不是很簡單呀！</p>
+<hr>
+<p>若想要新增其他的組態檔，則需要藉由 HTTP 的方式取得檔案，並透過 <code>AddJsonStream</code> 方法將串流加到 <code>Configuration</code>，如下列方式：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> client = <span class="keyword">new</span> HttpClient() &#123; BaseAddress = <span class="keyword">new</span> Uri(builder.HostEnvironment.BaseAddress) &#125;;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">var</span> response = <span class="keyword">await</span> client.GetAsync(<span class="string">"mysettings.json"</span>);</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">var</span> stream = <span class="keyword">await</span> response.Content.ReadAsStreamAsync();</span><br><span class="line">builder.Configuration.AddJsonStream(stream);</span><br></pre></td></tr></table></figure>
+
+<p>需注意檔案一定要擺放在 <code>wwwroot</code> 目錄下，而如果你跟我一樣發現 <code>AddJsonFile</code> 這個方法，想說為什麼不像 <code>.NET Core API</code> 一樣直接用這個方法就好？那是因為我在使用時跟<a href="https://github.com/dotnet/aspnetcore/issues/21391" target="_blank" rel="noopener">Blazor wasm AddJsonFile fails with error #21391</a>發生了同樣的錯誤，可能未來能夠使用這種方式新增，但現在先暫時以上述方法增加組態檔吧！</p>
+<hr>
+<p>以上就是組態設定的介紹，若想觀看本文的完整範例可以到<a href="https://github.com/MMiooiMM/learn-blazor-in-30-days-sample/commit/368dae4431edf527ca0678c33f51ea9ac8949fe7" target="_blank" rel="noopener">範本程式碼 - Day24</a>。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/en-us/aspnet/core/blazor/fundamentals/configuration?view=aspnetcore-3.1" target="_blank" rel="noopener">ASP.NET Core Blazor configuration</a><br><a href="https://jkdev.me/blazor-appsettings/" target="_blank" rel="noopener">Using AppSettings in Blazor WebAssembly</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/10/09/2020-10-09-learn-blazor-in-30-days-24/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 24 組態魔術';
+var disqus_url = 'http://yoursite.com/2020/10/09/2020-10-09-learn-blazor-in-30-days-24/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

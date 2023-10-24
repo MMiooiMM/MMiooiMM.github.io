@@ -1,0 +1,89 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>.NET 後端起手式 30天認識 C# - Day 06 陳述式(三) | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/2019-iT-%E9%82%A6%E5%B9%AB%E5%BF%99%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">2019 iT 邦幫忙鐵人賽</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2018-10-16</div></div></div><div class="container post-header"><h1>.NET 後端起手式 30天認識 C# - Day 06 陳述式(三)</h1></div><div class="container post-content"><h2 id="Day-06-陳述式-三"><a href="#Day-06-陳述式-三" class="headerlink" title="Day 06 陳述式(三)"></a>Day 06 陳述式(三)</h2><h3 id="陳述式"><a href="#陳述式" class="headerlink" title="陳述式"></a>陳述式</h3><h3 id="跳躍陳述式"><a href="#跳躍陳述式" class="headerlink" title="跳躍陳述式"></a>跳躍陳述式</h3><p>跳躍陳述式能在程式碼執行時跳躍語句順序執行，用途通常是離開迴圈或方法，有 break, continue, goto, return 四種。</p>
+<h4 id="break"><a href="#break" class="headerlink" title="break"></a>break</h4><blockquote>
+<p>break 陳述式會終止其所在的最接近封閉式迴圈或 switch 陳述式。</p>
+</blockquote>
+<p>switch 昨天有講了，那來解釋終止其所在的最接近封閉式迴圈是什麼意思，迴圈可以是巢狀的，也就是一層包一層如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for (int i &#x3D; 1; i &lt;&#x3D; 9; i++) &#123;</span><br><span class="line">  for (int j &#x3D; 1; j &lt;&#x3D; 9; j++) &#123;</span><br><span class="line">    Console.Write($&quot;&#123;i&#125; * &#123;j&#125; &#x3D; &#123;i * j&#125;\t&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">  Console.Write(&quot;\n&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這就是簡單的 99 乘法表列印，用了 string 的字串內插補點(<code>$</code>)，後面介紹方法時會提到，而<code>\t</code>的<code>\</code>是跳脫字元，<code>\t</code>等同於水平方向的 TAB，而<code>\n</code>是換行，跳脫字元可以參考文末前輩寫的文章，因為 C# 不是什麼新東西，網路上有太多的資源了，至少我學到現在還沒有找不到的答案。所以我不打算寫在系列文的內容，之後可能都會在文末附上額外補充的文章，想了解可以自行前往，但不讀也不會影響之後的內容就是了。</p>
+<p>歪題了，這就是巢狀迴圈，雖然我不知道到底要幾層才能稱為巢狀啦。</p>
+<p>當今天只要印 1 ~ 9 的各別乘到五時，也就是乘數是六我就將被乘數 +1，就可以加入 break 來終止迴圈。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for (int i &#x3D; 1; i &lt;&#x3D; 9; i++) &#123;</span><br><span class="line">  for (int j &#x3D; 1; j &lt;&#x3D; 9; j++) &#123;</span><br><span class="line">    if (j &#x3D;&#x3D; 6) break;</span><br><span class="line">    Console.Write($&quot;&#123;i&#125; * &#123;j&#125; &#x3D; &#123;i * j&#125;\t&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">  Console.Write(&quot;\n&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我只是舉個例子，實際上我們都知道改 j 的條件判斷就好。</p>
+<p>我們先稱以 i 為主的迴圈為 i 迴圈 而 j 為主的迴圈為 j 迴圈，上面的程式碼可以看到雖然 i 迴圈與 j 迴圈都包住 break，但離 break 最近的是 j 迴圈，所以當 <code>j == 6</code> 為 true 時終止 j 迴圈。記住是要<strong>包住 break 的迴圈</strong>才會被正確的終止，所以放在 i 迴圈裡 j 迴圈外則是印 1 ~ 5 的各別乘到九</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for (int i &#x3D; 1; i &lt;&#x3D; 9; i++) &#123;</span><br><span class="line">  if (i &#x3D;&#x3D; 6) break;</span><br><span class="line">  for (int j &#x3D; 1; j &lt;&#x3D; 9; j++) &#123;</span><br><span class="line">    Console.Write($&quot;&#123;i&#125; * &#123;j&#125; &#x3D; &#123;i * j&#125;\t&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">  Console.Write(&quot;\n&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到我把條件判斷改成 <code>i == 6</code>，因為 j 的作用域在 j 迴圈，i 迴圈無法讀取 j 值。</p>
+<p>PS.程式碼都可以複製放進 Main 函式裡觀看結果。</p>
+<h4 id="continue"><a href="#continue" class="headerlink" title="continue"></a>continue</h4><blockquote>
+<p>continue 陳述式會將控制權轉移給其所在的封閉式 while、do、for 或 foreach 陳述式的下一個反覆項目。</p>
+</blockquote>
+<p>與 break 不同，continue 不會使迴圈中斷，只是跳過這一次執行，一樣由 99 乘法表來改寫，這次我們不想要印出 5 結尾的 99乘法表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for (int i &#x3D; 1; i &lt;&#x3D; 9; i++) &#123;</span><br><span class="line">  for (int j &#x3D; 1; j &lt;&#x3D; 9; j++) &#123;    </span><br><span class="line">    if (j &#x3D;&#x3D; 5) continue;</span><br><span class="line">    Console.Write($&quot;&#123;i&#125; * &#123;j&#125; &#x3D; &#123;i * j&#125;\t&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">  Console.Write(&quot;\n&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="goto"><a href="#goto" class="headerlink" title="goto"></a>goto</h4><blockquote>
+<p>goto 陳述式會將程式控制權直接轉移到標記陳述式。<br>goto 的一個常見用法是將控制權轉移到特定的切換案例標籤，或 switch 陳述式中的預設標籤。<br>goto 陳述式也適用於跳出深度巢狀的迴圈。</p>
+</blockquote>
+<p>一樣來改寫 99 乘法表，並逐一解釋 goto 的用法。</p>
+<p>第一種直接轉移控制權，就是跳到標記的陳述式位置如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">  for (int i &#x3D; 1; i &lt;&#x3D; 9; i++) &#123;</span><br><span class="line">    for (int j &#x3D; 1; j &lt;&#x3D; 9; j++) &#123;    </span><br><span class="line">      if (j &#x3D;&#x3D; 5) goto Finish;</span><br><span class="line">      Console.Write($&quot;&#123;i&#125; * &#123;j&#125; &#x3D; &#123;i * j&#125;\t&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    Console.Write(&quot;\n&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">Finish:</span><br><span class="line">  Console.Write(&quot;跳到這之後了&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>執行一次就會知道當 <code>j == 5</code> 時就跳到 <code>Finish:</code>後面的程式碼了，所以只執行到 <code>1 * 4 = 4</code>，也一起解釋第三種所描述的情況，他跳出了巢狀迴圈。</p>
+<p>根據第一種方式你可以這樣撰寫</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">  int i &#x3D; 0;</span><br><span class="line">  goto First;</span><br><span class="line">Second:</span><br><span class="line">  Console.WriteLine(i);</span><br><span class="line">  goto Third;</span><br><span class="line">First:</span><br><span class="line">  i &#x3D; i + 1;</span><br><span class="line">  goto Second;</span><br><span class="line">Third:</span><br><span class="line">  i &#x3D; i + 1;</span><br><span class="line">  Console.WriteLine(i);</span><br></pre></td></tr></table></figure>
+
+<p>我不能保證你不被打死，寫的時候還要注意不能造成無窮迴圈</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  int i &#x3D; 0;</span><br><span class="line">InfiniteLoop:</span><br><span class="line">  i &#x3D; i + 1;</span><br><span class="line">  goto InfiniteLoop;</span><br></pre></td></tr></table></figure>
+
+<p>第二種的 switch 裡切換預設標籤，Day 3 介紹的 switch 沒有提到這個用法，主要是本人很少使用 goto，所以寫得當下沒有意識到，那這邊就來順便補充一下，拿 Day 3 的例子來說， switch 內你想要 case 6 的事件執行完之後也執行 case 5 事件的話，那就可以用 goto 來達成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">int a &#x3D; 6;</span><br><span class="line">switch (a) &#123;</span><br><span class="line">  case 5:</span><br><span class="line">    Console.WriteLine(&quot;a !&#x3D; 5 所以不執行這邊但因為 goto 所以跑過來了&quot;);</span><br><span class="line">    break;</span><br><span class="line">  case 6:</span><br><span class="line">    Console.WriteLine(&quot;a &#x3D;&#x3D; 6 所以執行這邊&quot;);</span><br><span class="line">    goto case 5;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>透過 goto 就可以到達 case 5 事件印出<code>a != 5 所以不執行這邊但因為 goto 所以跑過來了</code>，所以我應該修正本來的話</p>
+<blockquote>
+<p>在 switch 裡每一個 case 後都需要有一個 break 隔開，如果不隔開則可以判斷這兩個 case 執行相同內容</p>
+</blockquote>
+<p>改成</p>
+<blockquote>
+<p>在 switch 裡每一個 case 後都需要有一個 break 或 goto 隔開，如果不隔開則可以判斷這兩個 case 執行相同內容</p>
+</blockquote>
+<p>還有這句</p>
+<blockquote>
+<p>該 case 如果有事件存在，則一定要加 break</p>
+</blockquote>
+<p>改成</p>
+<blockquote>
+<p>該 case 如果有事件存在，則一定要加 break 或 goto</p>
+</blockquote>
+<p>所以說我寫的內容不一定是百分百正確，請小心服用。</p>
+<p>題外話：因為我想把文章寫給每天跟著閱讀的人，所以不修改前面的文章，而是在後面提起前面錯誤的內容。</p>
+<h4 id="return"><a href="#return" class="headerlink" title="return"></a>return</h4><blockquote>
+<p>return 陳述式會終止執行在其中出現的方法，並且將控制權傳回給呼叫方法。</p>
+</blockquote>
+<p>會在介紹方法時一起說明。</p>
+<h4 id="一些小結論"><a href="#一些小結論" class="headerlink" title="一些小結論"></a>一些小結論</h4><p>break 與 continue 主要是跟著迴圈使用，使迴圈在進行時當特定條件發生時的處理，離開迴圈(break)或跳過並繼續執行下一個(continue)。因為目前只有介紹基礎，等到之後學會的內容一多，就可以看到更多的範例了。</p>
+<p>而 goto 本人極少使用，很難說明情境。</p>
+<p>題外話：寫到今天，系列文的走向已經跟預想的慢慢不一樣了，覺得這時候應該先介紹什麼，什麼該放在後面，不知道這樣的編排，讓讀者閱讀時方不方便。本來想把例外狀況處理陳述式(try-catch)與這篇放在一起，但考慮之後想把 try-catch 與 debug 技巧寫作一篇，並放在介紹方法完之後，所以會再看到陳述式(四)XD。</p>
+<p>感謝您的閱讀。</p>
+<p>參考連結<br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/language-reference/keywords/jump-statements" target="_blank" rel="noopener">跳躍陳述式 (C# 參考) | Microsoft Docs</a><br><a href="https://dotblogs.com.tw/jeff-yeh/2009/03/17/7509" target="_blank" rel="noopener">C#常用的幾個特殊逸出Escape字元 | Jeff 隨手記 - 點部落</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/10/16/2018-10-16-learn-csharp-in-30-days-06/';
+var disqus_title = '.NET 後端起手式 30天認識 C# - Day 06 陳述式(三)';
+var disqus_url = 'http://yoursite.com/2018/10/16/2018-10-16-learn-csharp-in-30-days-06/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

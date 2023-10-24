@@ -1,0 +1,114 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 15 魔術技巧 - 客製化輸入元件 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-30</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 15 魔術技巧 - 客製化輸入元件</h1></div><div class="container post-content"><p>昨天講解了父子元件溝通問題，而今天我們的目標是透過介紹內建輸入元件時提到的 <code>InputBase&lt;TValue&gt;</code> 來建立客製化輸入元件。</p>
+<hr>
+<p>元件只需要繼承 <code>InputBase&lt;TValue&gt;</code> 即可，如：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@inherits InputBase&lt;<span class="keyword">string</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<p>這樣一來，我們的元件就能夠使用 <code>InputBase&lt;TValue&gt;</code> 的所有成員了。</p>
+<ul>
+<li>屬性成員</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">名稱</th>
+<th align="left">類別</th>
+<th align="left">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">AdditionalAttributes</td>
+<td align="left"><code>IReadOnlyDictionary&lt;string, object&gt;</code></td>
+<td align="left">用來設定或取得額外屬性，搭配 <code>@attributes</code> 來使用。</td>
+</tr>
+<tr>
+<td align="left">Value</td>
+<td align="left"><code>TValue</code></td>
+<td align="left">用於設定或取得值，需與雙向綁定一起使用</td>
+</tr>
+<tr>
+<td align="left">ValueChanged</td>
+<td align="left"><code>EventCallback&lt;TValue&gt;</code></td>
+<td align="left">用於設定或取得綁定值的回呼</td>
+</tr>
+<tr>
+<td align="left">ValueExpression</td>
+<td align="left"><code>Expression&lt;Func&lt;TValue&gt;&gt;</code></td>
+<td align="left">用於設定或取得綁定值的表達式</td>
+</tr>
+<tr>
+<td align="left">EditContext</td>
+<td align="left"><code>EditContext</code></td>
+<td align="left">用於取得關聯的 <code>EditContext</code></td>
+</tr>
+<tr>
+<td align="left">FieldIdentifier</td>
+<td align="left"><code>FieldIdentifier</code></td>
+<td align="left">用於取的綁定值的 <code>FieldIdentifier</code>(也就是 <code>Model</code> 與 <code>FieldName</code>)</td>
+</tr>
+<tr>
+<td align="left">CurrentValue</td>
+<td align="left"><code>TValue</code></td>
+<td align="left">用於設定或取得當前的值</td>
+</tr>
+<tr>
+<td align="left">CurrentValueAsString</td>
+<td align="left"><code>string</code></td>
+<td align="left">用於設定或取得當前的值，以 <code>FormatValueAsString</code> 傳回的字串表示。</td>
+</tr>
+<tr>
+<td align="left">CssClass</td>
+<td align="left"><code>string</code></td>
+<td align="left">用於取得外部給元件的 CssClass。</td>
+</tr>
+</tbody></table>
+<ul>
+<li>方法成員</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">名稱</th>
+<th align="left">傳回值</th>
+<th align="left">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">FormatValueAsString(TValue value)</td>
+<td align="left">string</td>
+<td align="left">將 TValue 值格式化成字串</td>
+</tr>
+<tr>
+<td align="left">TryParseValueFromString(string value, out TValue result, out string validationErrorMessage)</td>
+<td align="left">bool</td>
+<td align="left">用於解析輸入的內容，並轉換成特定字串；當解析失敗時，能提供錯誤訊息。</td>
+</tr>
+</tbody></table>
+<p>而這邊簡單的做一個輸入框，只要是輸入英文，<code>input</code> 事件發生後都會被強制轉換成大寫：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@inherits InputBase&lt;<span class="keyword">string</span>&gt;</span><br><span class="line"></span><br><span class="line">&lt;input @attributes=<span class="string">"AdditionalAttributes"</span></span><br><span class="line">       <span class="keyword">class</span>=<span class="string">"@CssClass"</span></span><br><span class="line">       @bind=<span class="string">"CurrentValueAsString"</span> /&gt;</span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">bool</span> <span class="title">TryParseValueFromString</span>(<span class="params"><span class="keyword">string</span> <span class="keyword">value</span>, <span class="keyword">out</span> <span class="keyword">string</span> result, <span class="keyword">out</span> <span class="keyword">string</span> validationErrorMessage</span>)</span></span><br><span class="line"><span class="function"></span>  &#123;</span><br><span class="line">    <span class="keyword">var</span> valid = !<span class="keyword">string</span>.IsNullOrEmpty(<span class="keyword">value</span>);</span><br><span class="line">    result = valid ? <span class="keyword">value</span>.ToUpper() : <span class="literal">null</span>;</span><br><span class="line">    validationErrorMessage = valid ? <span class="string">""</span> : <span class="string">"Invalid Value"</span>;</span><br><span class="line">    <span class="keyword">return</span> valid;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用時就像內建的輸入元件一樣，只能在 <code>EditForm</code> 中使用，要注意的一點是 <code>TryParseValueFromString</code> 方法是抽象的，所以我們只必須要自己實作解析方法即可。</p>
+<hr>
+<p>以上就是客製化輸入元件的方法，透過繼承 <code>InputBase&lt;TValue&gt;</code> 就可以簡單辦到，但如果只是想在 <code>InputText</code> 中添加內容，也是可以直接繼承 <code>InputText</code> 與其它的內建輸入元件唷。</p>
+<p>感謝大家的閱讀，先祝大家中秋節快樂，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/forms-validation?view=aspnetcore-3.1#inputtext-based-on-the-input-event" target="_blank" rel="noopener">以輸入事件為基礎的 InputText</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/30/2020-09-30-learn-blazor-in-30-days-15/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 15 魔術技巧 - 客製化輸入元件';
+var disqus_url = 'http://yoursite.com/2020/09/30/2020-09-30-learn-blazor-in-30-days-15/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>ngrok 用於 .Net Core Web API 發生的問題與處理方式 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/NET/" rel="tag">.NET</a><a class="post-tag-link" href="/tags/ngrok/" rel="tag">ngrok</a></div><div class="post-time">2020-06-14</div></div></div><div class="container post-header"><h1>ngrok 用於 .Net Core Web API 發生的問題與處理方式</h1></div><div class="container post-content"><p><a href="https://ngrok.com/" target="_blank" rel="noopener">ngrok</a> 是一個能夠讓內部伺服器與外界溝通的服務，透過這種手段來讓外部預覽本地開發的內容，如 <code>http://localhost</code> 或 <code>http://127.0.0.1</code>，使用方法也很簡單。</p>
+<ol>
+<li>註冊 ngrok 帳號。</li>
+<li>安裝 ngrok client。</li>
+<li>開啟 console 並進入安裝目錄。</li>
+<li><code>ngrok authtoken ge9fw1...</code> 進行認證。</li>
+<li><code>ngrok http 3000</code> 連線到 ngrok proxy server。</li>
+<li>取得連接 local server 的網址後完成。</li>
+</ol>
+<p>但使用在 .Net Core Web Api 時，輸入 <code>ngrok http 5001</code>，連線時卻會得到 <code>502 bad gateway</code> 錯誤畫面。</p>
+<p>此時我們的指令只要改成 <code>ngrok http https://localhost:5001 -host-header=localhost:5001</code> 就可以正常連線。</p>
+<p>參考資料<br><a href="https://stackoverflow.com/questions/40598428/ngrok-errors-502-bad-gateway" target="_blank" rel="noopener">Ngrok errors ‘502 bad gateway’</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/06/14/2020-06-14-dotnet-core-ngrok/';
+var disqus_title = 'ngrok 用於 .Net Core Web API 發生的問題與處理方式';
+var disqus_url = 'http://yoursite.com/2020/06/14/2020-06-14-dotnet-core-ngrok/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

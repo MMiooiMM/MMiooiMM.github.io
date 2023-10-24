@@ -1,0 +1,121 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>.NET 後端起手式 30天認識 C# - Day 02 型別與變數 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/2019-iT-%E9%82%A6%E5%B9%AB%E5%BF%99%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">2019 iT 邦幫忙鐵人賽</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2018-10-12</div></div></div><div class="container post-header"><h1>.NET 後端起手式 30天認識 C# - Day 02 型別與變數</h1></div><div class="container post-content"><h2 id="Day-02-型別與變數"><a href="#Day-02-型別與變數" class="headerlink" title="Day 02 型別與變數"></a>Day 02 型別與變數</h2><h3 id="型別"><a href="#型別" class="headerlink" title="型別"></a>型別</h3><p>再介紹型別前，首先分享幾個觀念</p>
+<ol>
+<li><p>C# 會將記憶體分為兩大用途︰Stack 與 Heap。</p>
+</li>
+<li><p>C# 中所有的變數 (不管是實值型別或是參考型別)，其內容 (變數名稱、型別與值) 都是儲存在 Stack 中。</p>
+</li>
+<li><p>實值型別 (Value Type) 變數儲存的內容是「實值」。</p>
+</li>
+<li><p>參考型別 (Reference Type) 變數儲存的內容是「參考」。使用 new 關鍵字實體化類別的物件，其物件內容是儲存在 Heap 中。Reference Type 變數中所儲存的參考，便是指向 Heap 中的記憶體起始位址。</p>
+</li>
+</ol>
+<p>以下是本人所畫的，大致上可以先這樣想會比較好理解，但就算不理解也沒關係，學久了自然會懂(應該吧。</p>
+<p><img src="/images/2018-10-12/01.png" alt="/images/2018-10-12/01.png"></p>
+<p>由於實值型別所存放的是「實值」，所以存放在 Stack 的時候需明確告知位元大小，所以每一個實值型別都有屬於自己的位元大小與用途。</p>
+<p>實值型別有</p>
+<ul>
+<li>簡單型別<ul>
+<li>帶正負號的整數︰sbyte、short、int、long</li>
+<li>不帶正負號的整數︰byte、ushort、uint、ulong</li>
+<li>Unicode 字元：char</li>
+<li>IEEE 浮點數：float、double</li>
+<li>高精確度十進位︰decimal</li>
+<li>布林值：bool</li>
+</ul>
+</li>
+<li>列舉型別<ul>
+<li>使用者定義型別，格式為 enum E {…}</li>
+</ul>
+</li>
+<li>結構型別<ul>
+<li>使用者定義型別，格式為 struct S {…}</li>
+</ul>
+</li>
+<li>可為 Null 的實值型別<ul>
+<li>含有 null 值的所有其他數值型別的擴充</li>
+</ul>
+</li>
+</ul>
+<p>簡單的描述幾個簡單型別：</p>
+<ul>
+<li>如果要做整數運算時可以使用 int，int 存放的內容是 32 位元，用途是存取 -2,147,483,648 到 2,147,483,647 之間的數值。</li>
+<li>如果需要帶有小數點的浮點數運算時可以使用 float，float 存放的內容是 32 位元，用途是存取 1.5 × 10-45 到 3.4 × 1038 之間，有 7 位數精確度。</li>
+<li>如果是做真假判斷的話可以使用 bool，bool 存放的內容只有 true 表示真與 false 表示假，在介紹條件判斷時會有更明確的描述。</li>
+</ul>
+<p>如果想看更多可以在下方參考連結觀看，就不一一介紹了。</p>
+<p>而參考型別只需存入放在 Heap 中的記憶體起始位置就好，這有什麼好處呢？就是我們在傳遞變數時，是以 Stack 中的值、參考複製後傳遞，所以用實值傳遞的資料量大時，便顯得相當耗時，而用參考傳遞則免去複製其他變數內容資料，只需要 Heap 的起始位置就可以，所以相對比較有效率。</p>
+<p>參考型別有</p>
+<ul>
+<li>類別型別<ul>
+<li>所有其他型別的基底類別︰object</li>
+<li>Unicode 字串：string</li>
+<li>使用者定義型別，格式為 class C {…}</li>
+</ul>
+</li>
+<li>介面型別<ul>
+<li>使用者定義型別，格式為 interface I {…}</li>
+</ul>
+</li>
+<li>陣列型別<ul>
+<li>單一維度和多維度，例如 int[] 和 int[,]</li>
+</ul>
+</li>
+<li>委派型別<ul>
+<li>使用者定義型別，格式為 delegate int D(…)</li>
+</ul>
+</li>
+</ul>
+<p>詳細的參考型別會放在後面的內容介紹。</p>
+<p>題外話：這邊的傳值傳參考，並不是廣泛說的call by value/reference，<strong>個人認為，只是個人認為</strong>，C# 的 value type 為 call by value，而 reference type 則類似於 JS 的 call by sharing，要真正做到 call by reference 則需要使用 ref 關鍵字，僅為個人見解，也在文末附上相關文章。</p>
+<h3 id="變數"><a href="#變數" class="headerlink" title="變數"></a>變數</h3><p>了解型別後，打開我們的 VSCode，並且開啟昨天的專案資料夾，點擊 <code>Program.cs</code>，我們就可以來定義一個型別為 int 且變數名稱是 a 的變數。</p>
+<p>沒意外以後的操作都是在<code>Program.cs</code>裡面，往後就不在贅述。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">demo</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">int</span> a;</span><br><span class="line">            Console.WriteLine(<span class="string">"Hello World!"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>切記在 C# 語法裡，語句需要有 <code>分號( ; )</code> 做結尾。</strong></p>
+<p>為了使內容整齊<code>Main(string[] args){...}</code>所包住的東西我們先稱為 Main 函式，而<code>Console.WriteLine(&quot;Hello World!&quot;)</code>是一個將內容顯示在 console 的函式，會在之後說明函式與方法以及它的作用域，而後面的程式碼為 Main 函式的內容。</p>
+<p>接著我們可以對變數 a 進行賦值行為，給予他一個實值內容，並且將 Hello World! 替換成 a。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;</span><br><span class="line">a = <span class="number">10</span>;</span><br><span class="line">Console.WriteLine(a);</span><br></pre></td></tr></table></figure>
+
+<p>或者也可以在定義變數時賦值如</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line">Console.WriteLine(a);</span><br></pre></td></tr></table></figure>
+
+<p>你會發現本來顯示在 DEBUG CONSOLE 的 <code>Hello World!</code> 變成了 <code>10</code> 這樣我們就學會了產生一個變數並且使用第一個函式<code>Console.WriteLine(a)</code>了。</p>
+<p>你也可以一次定義很多的相同型別的變數，只要使用逗號(,)區隔就可以。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a, b;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">1</span>, b = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p>變數名稱限制只有</p>
+<ol>
+<li>開頭只能是英文、底線(_)或者不建議的中文。</li>
+<li>之後才可以加入數字。</li>
+<li>不能使用關鍵字(如 int)，除非在關鍵字前面加上@符號(如 @int)。</li>
+</ol>
+<p>範例：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i123; <span class="comment">//可以。</span></span><br><span class="line"><span class="keyword">int</span> <span class="number">123</span>i; <span class="comment">//無法。不能以數字開頭。</span></span><br><span class="line"><span class="keyword">int</span> _123i;<span class="comment">//可以。</span></span><br><span class="line"><span class="keyword">int</span> <span class="keyword">int</span>;  <span class="comment">//無法。int 為關鍵字。</span></span><br><span class="line"><span class="keyword">int</span> @<span class="keyword">int</span>; <span class="comment">//可以。但不建議這樣命名。</span></span><br><span class="line"><span class="keyword">int</span> $i123;<span class="comment">//無法。特殊符號只能是底線。</span></span><br></pre></td></tr></table></figure>
+
+<p>但你也不用擔心錯誤的命名，因為 IDE 會在你開發時檢查有的沒的，你會看到錯誤的命名下有出現紅色底線，告知你編寫錯誤。</p>
+<p>而對於變數的命名，希望在學習時便能開始自我要求，有興趣的可以閱讀下面參考連結的文章。</p>
+<p>雖然本篇寫的很長，但只要能知道如何定義一個變數就可以接著看下去了，不懂的地方以後慢慢了解就好。</p>
+<p>參考連結<br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/tour-of-csharp/types-and-variables" target="_blank" rel="noopener">C# 型別和變數 - C# 語言教學課程 | Microsoft Docs</a><br><a href="https://hk.saowen.com/a/564a774a2ce8c7b4c7197cc11bbca401a40db9d53b6442b9ed523b1c20e1b6f1" target="_blank" rel="noopener">C#常用的命名規則彙總 - 掃文資訊</a><br><a href="https://dotblogs.com.tw/davis/2009/12/30/12737" target="_blank" rel="noopener">[C#][C# IN DEPTH筆記][004] 數值型別與參考型別 | 簡單就是美 :: { 簡單其實很不簡單 } - 點部落</a><br><a href="https://blog.techbridge.cc/2018/06/23/javascript-call-by-value-or-reference/" target="_blank" rel="noopener">深入探討 JavaScript 中的參數傳遞：call by value 還是 reference？ | TechBridge 技術共筆部落格</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/10/12/2018-10-12-learn-csharp-in-30-days-02/';
+var disqus_title = '.NET 後端起手式 30天認識 C# - Day 02 型別與變數';
+var disqus_url = 'http://yoursite.com/2018/10/12/2018-10-12-learn-csharp-in-30-days-02/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

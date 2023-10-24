@@ -1,0 +1,75 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 09 表單魔術 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-24</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 09 表單魔術</h1></div><div class="container post-content"><p>前置作業也差不多告一段落了，終於要邁向寫網頁最基本的需求了，也就是撰寫表單，畢竟如果沒有表單，也就不會有 CRUD 等的資料連動，沒有資料連動的網頁也就會只是靜態頁面，除非你的客戶都是自己去使用 Postman 之類的工具來打你的 API 或者手動去修改 DB，不然難逃有一個介面供他們操作。</p>
+<hr>
+<p>要使用表單，首先我們要了解 <code>EditForm</code> 元件。</p>
+<p><code>EditForm</code> 元件定義了整個表單，並且所有的內建控制項元件都需要仰賴於此，如果單獨使用控制項元件，則會產生錯誤唷。</p>
+<p>屬性類：</p>
+<ul>
+<li><p>表單模型，只能有一個且一定要有一個：</p>
+<ul>
+<li><p><code>Model</code> 屬性用於指定表單模型，並會自動創建 <code>EdicContext</code>。<br>使用起來像：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// User.razor.cs</span></span><br><span class="line"><span class="keyword">private</span> UserViewModel user = <span class="keyword">new</span> UserViewModel();</span><br></pre></td></tr></table></figure>
+<p>與</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@* User.razor *@</span><br><span class="line">&lt;EditForm Model=<span class="string">"user"</span>&gt;</span><br><span class="line">  @* ... *@</span><br><span class="line">&lt;/EditForm&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>EditContext</code> 屬性用於明確指定 <code>EditContext</code>，表單模型將從其 <code>Model</code> 屬性提取。<br>使用起來像：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// User.razor.cs</span></span><br><span class="line"><span class="keyword">private</span> EditContext editContext;</span><br><span class="line"><span class="keyword">private</span> UserViewModel user = <span class="keyword">new</span> UserViewModel();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">OnInitialized</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    editContext = <span class="keyword">new</span> EditContext(user);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>與</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@* User.razor *@</span><br><span class="line">&lt;EditForm EditContext=<span class="string">"@editContext"</span>&gt;</span><br><span class="line">  @* ... *@</span><br><span class="line">&lt;/EditForm&gt;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>事件處理，當表單發出 <code>sumbit</code> 事件時執行的 <code>callback</code>，並根據不同情況分為三種方法，使用時只能有一個但可以沒有：</p>
+<ul>
+<li><p><code>OnValidSumbit</code> 表單驗證成功時才會發出。</p>
+</li>
+<li><p><code>OnInvalidSumbit</code> 表單驗證失敗時才會發出。</p>
+</li>
+<li><p><code>OnSubmit</code> 最陽春的，但使用時建議還是自行驗證，若使用 <code>EditContext</code> 則可以使用 <code>Validate</code> 來做驗證。<br>使用起來像：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@* User.razor *@</span><br><span class="line">&lt;EditForm EditContext=<span class="string">"@editContext"</span> OnSubmit=<span class="string">"@HandleSubmit"</span>&gt;</span><br><span class="line">  @* ... *@</span><br><span class="line">&lt;/EditForm&gt;</span><br></pre></td></tr></table></figure>
+<p>與</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// User.razor.cs</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">HandleSubmit</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (editContext.Validate())</span><br><span class="line">  &#123;</span><br><span class="line">    Logger.LogInformation(<span class="string">$"Success: <span class="subst">&#123;user.ToString()&#125;</span>"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    Logger.LogInformation(<span class="string">$"Fail: <span class="subst">&#123;editContext.GetValidationMessages().Aggregate((x, y) =&gt; <span class="string">$"<span class="subst">&#123;x&#125;</span>, <span class="subst">&#123;y&#125;</span>"</span>)&#125;</span>"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<p>元件類：</p>
+<ul>
+<li><p><code>DataAnnotationsValidator</code> 將資料註解的驗證添加到 <code>EditContext</code>，若沒添加則永遠驗證成功。</p>
+</li>
+<li><p><code>ValidationSummary</code> 顯示來自 <code>EditContext</code> 的驗證訊息列表，也就是將驗證錯誤的資料註解所標記的訊息總結並顯示。</p>
+</li>
+<li><p><code>ValidationMessage</code> 顯示特定欄位的驗證訊息，需透過 <code>For</code> 屬性並使用 lambda 運算式來命名模型屬性。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;ValidationMessage For=<span class="string">"@(()=&gt;user.Name)"</span> /&gt;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<p>以上就是表單的初步內容啦，對了，如果想看我寫的完整範例，可以觀看<a href="https://github.com/MMiooiMM/learn-blazor-in-30-days-sample/commit/4602a1ce6466d8b36e914582069c816e4548e590" target="_blank" rel="noopener">範例程式碼 - Day9</a>與<a href="https://github.com/MMiooiMM/learn-blazor-in-30-days-sample/commit/706ad36c97cc6533525e5db98622f10073a41379" target="_blank" rel="noopener">範例程式碼2 - Day9</a>唷。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/forms-validation?view=aspnetcore-3.1" target="_blank" rel="noopener">ASP.NET Core Blazor 表單和驗證</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/24/2020-09-24-learn-blazor-in-30-days-09/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 09 表單魔術';
+var disqus_url = 'http://yoursite.com/2020/09/24/2020-09-24-learn-blazor-in-30-days-09/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 20 相依性注入魔術 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-10-05</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 20 相依性注入魔術</h1></div><div class="container post-content"><p>終於要來講解相依性注入(dependency injection)，一起來看看如何在 Blazor WebAssembly 中使用相依性注入吧！</p>
+<hr>
+<p>相依性注入技術，可以說是當今 .NET Core 開發人員的必備技能，網路上也充斥著大量技術文章，避免有人還沒上車，就小小的聊一下，如果已經了解 DI 的人可以下滑至下個段落，或者可以看一下我理解對不對。</p>
+<p>相依性注入簡單來說就是將物件的生命週期集中管理，這使得本來相依的兩個物件被迫分開，因為相依物件的生命週期從物件本身管理被改成由 DI Container 管理。當物件需要相依物件時，也需要從 DI Container 去要，而將相依物件放進 DI Container 與物件從 DI Container 取得相依物件，這整件事情，我們稱作相依性注入。</p>
+<p>那麼為什麼會有相依性注入？我個人認為，是因為現在程式碼撰寫風格的變化，以前可能電腦沒那麼先進，所以對於系統的負擔錙銖必較，但現在除非是特定產業，不然細微的效能差異並不會影響使用者體驗，也造就了可讀性與可維護性較高的程式碼成為了現在的主流，當然也包括可測試性的程式碼，而這些程式碼都有個共通點，那就是符合 <a href="https://zh.wikipeDIa.org/wiki/SOLID_(%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1)" target="_blank" rel="noopener">SOLID (物件導向設計)</a> 的五大原則，而其中 D(依賴反轉原則) 的實現就是相依性注入。</p>
+<p>因為我本人寫程式的資歷並不多，對於發展史也是東拼西湊，如果有誤導大眾瞎說了一堆還請提出，感謝。</p>
+<h3 id="Blazor-WebAssembly-中使用相依性注入"><a href="#Blazor-WebAssembly-中使用相依性注入" class="headerlink" title="Blazor WebAssembly 中使用相依性注入"></a>Blazor WebAssembly 中使用相依性注入</h3><p>相依性注入可以：</p>
+<ol>
+<li><p>使多個元件間共用服務類別的單一實例(稱為單一服務)。</p>
+</li>
+<li><p>將元件與具體的服務類別間的參考變成抽象，也就是透過介面從 DI Container 中取得該介面的實作，使得我們可以交換實作來撰寫單元測試，也就是 Mock 的技巧。</p>
+</li>
+</ol>
+<p>在 Blazor WebAssembly 中的服務生命週期有：</p>
+<table>
+<thead>
+<tr>
+<th align="left">存留期</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Scoped</td>
+<td align="left"><strong>Blazor WebAssembly 應用程式目前不具有 DI 範圍的概念</strong>，註冊為 <code>Scoped</code> 的服務也會表現得像 <code>Singleton</code>，這點要注意，因為跟其他的 .net 框架有點差異。但官方建議如果你覺得該使用 <code>Scoped</code> 的服務還是使用 <code>Scoped</code> 吧！</td>
+</tr>
+<tr>
+<td align="left">Singleton</td>
+<td align="left">DI 會建立服務的<strong>單一實例</strong>，所有需要此服務的元件都會得到相同的實例。</td>
+</tr>
+<tr>
+<td align="left">Transient</td>
+<td align="left">每當元件從服務容器取得服務的實例時，都會收到服務的<strong>新實例</strong>。</td>
+</tr>
+</tbody></table>
+<p>而 Blazor WebAssembly 提供了幾個預設服務：</p>
+<table>
+<thead>
+<tr>
+<th align="left">服務</th>
+<th align="left">存留期</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">HttpClient</td>
+<td align="left">Scoped</td>
+<td align="left">提供方法來傳送 HTTP 要求與接收 HTTP 回應，會使用瀏覽器來處理背景中的 HTTP 流量。</td>
+</tr>
+<tr>
+<td align="left">IJSRuntime</td>
+<td align="left">Singleton</td>
+<td align="left">當 JavaScript 呼叫被派遣時，此實例代表 JavaScript Runtime。</td>
+</tr>
+<tr>
+<td align="left">NavigationManager</td>
+<td align="left">Singleton</td>
+<td align="left">包含使用 URIs 和導覽狀態的協助程式。</td>
+</tr>
+</tbody></table>
+<p>而在元件中注入服務的方式有兩種：</p>
+<ol>
+<li>透過 <code>@inject</code> 指示詞注入如：</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@inject HttpClient HttpClient</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>透過 <code>[Inject]</code> 屬性注入，一般而言不會這樣使用，除非是注入在基類元件，使得衍生元件不需要再注入。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Inject</span>]</span><br><span class="line"><span class="keyword">protected</span> HttpClient HttpClient &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>而在服務中注入其他服務，只能透過建構式注入如：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DataAccess</span> : <span class="title">IDataAccess</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DataAccess</span>(<span class="params">HttpClient client</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>且要符合以下條件：</p>
+<ol>
+<li><p>必須要有一個建構式，其引數可由 DI 完成，如果有指定預設值，則允許包含 DI 未涵蓋的其他參數。</p>
+</li>
+<li><p>適用的建構式必須是 <code>public</code>。</p>
+</li>
+<li><p>一定要有一個是用的建構式，也就是 DI 在 new 的時候不能有某引數不在 DI Container 內而導致 new 失敗，此時 DI 就會擲回例外狀況。</p>
+</li>
+</ol>
+<h3 id="將服務新增到-DI"><a href="#將服務新增到-DI" class="headerlink" title="將服務新增到 DI"></a>將服務新增到 DI</h3><p>若是想要將自己的服務放到 DI，只需要修改 <code>Program.cs</code> 檔案中的 <code>Main</code> 方法即可。</p>
+<p>透過 <code>builder.Services</code> 並根據服務的生命週期來選擇對應的方法即可：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> Task <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>  &#123;</span><br><span class="line">    <span class="keyword">var</span> builder = WebAssemblyHostBuilder.CreateDefault(args);</span><br><span class="line">    builder.RootComponents.Add&lt;App&gt;(<span class="string">"app"</span>);</span><br><span class="line">    builder.Services.AddScoped(sp =&gt; <span class="keyword">new</span> HttpClient &#123; BaseAddress = <span class="keyword">new</span> Uri(builder.HostEnvironment.BaseAddress) &#125;);</span><br><span class="line">    builder.Services.AddSingleton&lt;IMyDependency, MyDependency&gt;();</span><br><span class="line">    <span class="keyword">await</span> builder.Build().RunAsync();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如上我放入了一個介面為 <code>IMyDependency</code> 實例為 <code>MyDependency</code> 的服務，並且生命週期為 <code>Singleton</code>，這樣就完成基本的 DI 了。</p>
+<hr>
+<p>以上就是關於在 Blazor WebAssembly 使用相依性注入的簡單介紹，是不是很簡單呀？</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/fundamentals/dependency-injection?view=aspnetcore-3.1" target="_blank" rel="noopener">ASP.NET Core Blazor 相依性注入</a><br><a href="https://zh.wikipeDIa.org/wiki/SOLID_(%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1)" target="_blank" rel="noopener">SOLID (物件導向設計)</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/10/05/2020-10-05-learn-blazor-in-30-days-20/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 20 相依性注入魔術';
+var disqus_url = 'http://yoursite.com/2020/10/05/2020-10-05-learn-blazor-in-30-days-20/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

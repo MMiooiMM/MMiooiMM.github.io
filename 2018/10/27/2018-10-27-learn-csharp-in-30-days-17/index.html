@@ -1,0 +1,147 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>.NET 後端起手式 30天認識 C# - Day 17 委派 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/2019-iT-%E9%82%A6%E5%B9%AB%E5%BF%99%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">2019 iT 邦幫忙鐵人賽</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2018-10-27</div></div></div><div class="container post-header"><h1>.NET 後端起手式 30天認識 C# - Day 17 委派</h1></div><div class="container post-content"><h2 id="DAY-17-委派"><a href="#DAY-17-委派" class="headerlink" title="DAY 17 委派"></a>DAY 17 委派</h2><h3 id="委派"><a href="#委派" class="headerlink" title="委派"></a>委派</h3><blockquote>
+<p>「委派型別」代表對方法的參考，其中含有特定參數清單與傳回型別。<br>委派讓您可將方法視為實體，而實體能指派給變數或當作參數來傳遞。<br>委派就類似其他程式設計語言中的函式指標，但與函式指標的不同之處是，委派是物件導向且為型別安全。</p>
+</blockquote>
+<p>簡單來說 Delegate (委派)是將 function 當成參數傳遞的型別。</p>
+<p>委派的方式有三種<strong>具名函式</strong>、<strong>匿名函式</strong>、<strong>Lambda運算式</strong>。</p>
+<ul>
+<li><p><strong>具名函式</strong>: 將已宣告的方法(<code>nameMethod</code>)指給委派</p>
+</li>
+<li><p><strong>匿名函式</strong>: <code>delegate (arguments) { statements }</code></p>
+<ul>
+<li><p>delegate: 匿名函式的的保留字</p>
+</li>
+<li><p>arguments: 傳入參數的宣告，可以多個參數(以<code>,</code>隔開)</p>
+</li>
+<li><p>statements: 此函式執行的程式碼片段</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Lambda</strong>: <code>arguments =&gt; expression | block</code></p>
+<ul>
+<li><p>arguments: 傳入參數的宣告，可以多個參數(以,隔開)。</p>
+<ul>
+<li><p>只有一個參數時可以不用括號，<strong>多個參數時都要加上括號</strong></p>
+</li>
+<li><p>可以不用明確指定型別</p>
+</li>
+<li><p>可以明確指定型別</p>
+</li>
+<li><p>明確指定型別時一定要加上括號</p>
+</li>
+<li><p>沒有傳入參數時用空括號 <code>()</code> 表示</p>
+</li>
+</ul>
+</li>
+<li><p>expression: 運算式，不括大括號 <code>{}</code> ，只能單行程式碼，代表回傳值</p>
+</li>
+<li><p>block: <code>{ statements }</code>: 程式碼區塊，<code>statement</code>為此函式執行的程式碼片段</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="具名函式"><a href="#具名函式" class="headerlink" title="具名函式"></a>具名函式</h4><p>委派需要事先宣告此委派類型的傳入參數與傳回值，至少 0 個參數，至多 32 個參數，可以無傳回值，也可以指定傳回值類型。</p>
+<p>注意 <strong>參數與傳回型別需一致</strong></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">  MyDelegate d;</span><br><span class="line">  d = <span class="keyword">new</span> MyDelegate (<span class="keyword">add</span>);</span><br><span class="line">  <span class="keyword">var</span> v = d (<span class="number">1</span>, <span class="number">2</span>); <span class="comment">// 1 + 2 = 3</span></span><br><span class="line">  Console.WriteLine (v);</span><br><span class="line">  d = <span class="keyword">new</span> MyDelegate (subtract);</span><br><span class="line">  v = d (<span class="number">2</span>, <span class="number">1</span>); <span class="comment">// 2 - 1 = 1</span></span><br><span class="line">  Console.WriteLine (v);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">delegate</span> <span class="keyword">int</span> <span class="title">MyDelegate</span> (<span class="params"><span class="keyword">int</span> x, <span class="keyword">int</span> y</span>)</span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add</span> (<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">subtract</span> (<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="匿名函式"><a href="#匿名函式" class="headerlink" title="匿名函式"></a>匿名函式</h4><blockquote>
+<p>使用匿名方法可以減少在具現化委派中撰寫程式碼的額外負荷，因為不必另外建立一個方法。</p>
+</blockquote>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">  MyDelegate d;</span><br><span class="line">  d = <span class="keyword">delegate</span> (<span class="keyword">int</span> x, <span class="keyword">int</span> y) &#123;</span><br><span class="line">    <span class="keyword">return</span> x + y;</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">var</span> v = d (<span class="number">1</span>, <span class="number">2</span>); <span class="comment">// 1 + 2 = 3</span></span><br><span class="line">  Console.WriteLine (v);</span><br><span class="line">  d = <span class="keyword">delegate</span> (<span class="keyword">int</span> x, <span class="keyword">int</span> y) &#123;</span><br><span class="line">    <span class="keyword">return</span> x - y;</span><br><span class="line">  &#125;;</span><br><span class="line">  v = d (<span class="number">2</span>, <span class="number">1</span>); <span class="comment">// 2 - 1 = 1</span></span><br><span class="line">  Console.WriteLine (v);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">delegate</span> <span class="keyword">int</span> <span class="title">MyDelegate</span> (<span class="params"><span class="keyword">int</span> x, <span class="keyword">int</span> y</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Lambda"><a href="#Lambda" class="headerlink" title="Lambda"></a>Lambda</h4><blockquote>
+<p>以 lambda 運算式取代匿名方法，成為撰寫程式碼內嵌的慣用方式。 </p>
+</blockquote>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">  MyDelegate d;</span><br><span class="line">  d = (<span class="keyword">int</span> x, <span class="keyword">int</span> y) =&gt; &#123; <span class="keyword">return</span> x + y; &#125;;</span><br><span class="line">  <span class="keyword">var</span> v = d (<span class="number">1</span>, <span class="number">2</span>); <span class="comment">// 1 + 2 = 3</span></span><br><span class="line">  Console.WriteLine (v);</span><br><span class="line">  d = (x, y) =&gt; x - y;</span><br><span class="line">  v = d (<span class="number">2</span>, <span class="number">1</span>); <span class="comment">// 2 - 1 = 1</span></span><br><span class="line">  Console.WriteLine (v);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">delegate</span> <span class="keyword">int</span> <span class="title">MyDelegate</span> (<span class="params"><span class="keyword">int</span> x, <span class="keyword">int</span> y</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到在減法方法中，lambda 甚至可以省去傳入參數的型別與 return 關鍵字。</p>
+<h3 id="委派的聲明"><a href="#委派的聲明" class="headerlink" title="委派的聲明"></a>委派的聲明</h3><p>除了 Delegate 也可以使用 Action, Func, Predicate 這些類型來進行委派，不用事先宣告委派的類型。</p>
+<h4 id="Action"><a href="#Action" class="headerlink" title="Action"></a>Action</h4><p>Action是無傳回值的泛型委派。 </p>
+<p>Action至少0個參數，至多16個參數。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">  Action&lt;<span class="keyword">string</span>&gt; action = action1;</span><br><span class="line">  action (<span class="string">"123"</span>); <span class="comment">// 123</span></span><br><span class="line">  action = action2;</span><br><span class="line">  action (<span class="string">"Mio"</span>); <span class="comment">// Hi Mio</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">action1</span> (<span class="params"><span class="keyword">string</span> a</span>)</span> &#123;</span><br><span class="line">  Console.WriteLine (a);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">action2</span> (<span class="params"><span class="keyword">string</span> a</span>)</span> &#123;</span><br><span class="line">  Console.WriteLine (<span class="string">"Hi "</span> + a);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Func"><a href="#Func" class="headerlink" title="Func"></a>Func</h4><p>Func 是有傳回值的泛型委派。</p>
+<p>Func 至少0個參數，至多16個參數，以及一個傳回值的型別參數。方法必須有傳回值，不可為 void。</p>
+<p>Func&lt;int&gt; 無輸入的參數，且傳回值為 int 型別的委派。</p>
+<p>Func&lt;object,string,int&gt; 表示傳入參數為 object , string 傳回值為 int 型別的委派。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">  Func&lt;<span class="keyword">int</span>&gt; func = func1;</span><br><span class="line">  Console.WriteLine (func ()); <span class="comment">// 0</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">func1</span> (<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 Func 委派時，也能用 Lambda 進行。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">  Func&lt;<span class="keyword">int</span>&gt; func = () =&gt; <span class="number">0</span>;</span><br><span class="line">  Console.WriteLine (func ()); <span class="comment">// 0</span></span><br><span class="line">  Func&lt;<span class="keyword">int</span>, <span class="keyword">int</span>, <span class="keyword">string</span>&gt; func2 = (a, b) =&gt; (a + b).ToString ();</span><br><span class="line">  Console.WriteLine (func2 (<span class="number">1</span>, <span class="number">2</span>)); <span class="comment">// 1 + 2 = 3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Predicate"><a href="#Predicate" class="headerlink" title="Predicate"></a>Predicate</h4><p>Predicate 是返回 bool 型的泛型委派。</p>
+<p>Predicate&lt;int&gt; 表示傳入參數為 int 返回 bool 的委派。</p>
+<p>Predicate 有且只有一個參數，傳回值固定為 bool。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">  Predicate&lt;<span class="keyword">int</span>&gt; predicate = predicate1;</span><br><span class="line">  Console.WriteLine (predicate (<span class="number">0</span>)); <span class="comment">// True</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">predicate1</span> (<span class="params"><span class="keyword">int</span> a</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> a == <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Lambda-1"><a href="#Lambda-1" class="headerlink" title="Lambda"></a>Lambda</h3><p>這邊在多補充點有關 Lambda 的觀念，因為 Lambda 在目前的程式碼撰寫很容易會使用到。</p>
+<blockquote>
+<p>Lambda 運算式是<strong>匿名函式</strong>，可用來建立<strong>委派</strong>或<strong>運算式樹狀架構</strong>類型。<br>使用 Lambda 運算式可以撰寫區域函式，這些函式可以當做引數傳遞，或是當做函式呼叫的值傳回。<br>Lambda 運算式對於撰寫 LINQ 查詢運算式而言特別有用。</p>
+</blockquote>
+<p>題外話：LINQ 會在之後做介紹。</p>
+<blockquote>
+<p>建立 Lambda 運算式，需在 Lambda 運算子(=&gt;) 的左邊指定輸入參數 (如果有的話)，並將運算式或陳述式區塊放在另一邊。</p>
+</blockquote>
+<p>結構如：<code>arguments =&gt; expression | block</code></p>
+<blockquote>
+<p>(=&gt;) 運算子與指派 (=) 具有相同的優先順序。</p>
+</blockquote>
+<h4 id="arguments"><a href="#arguments" class="headerlink" title="arguments"></a>arguments</h4><ul>
+<li>只有一個傳入參數時可以省略小括弧 <code>()</code></li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Only one input parameter</span></span><br><span class="line">x =&gt; x * x  <span class="comment">//legal</span></span><br><span class="line">(x) =&gt; x * x    <span class="comment">//legal</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//Two or more input parameters</span></span><br><span class="line">x, y =&gt; x * y   <span class="comment">//illegal</span></span><br><span class="line">(x, y) =&gt; x * y <span class="comment">//legal</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>可以明確指定型別，明確指定型別時一定要加上括號 <code>()</code> ，不明確指定型別也可以</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> x =&gt; x * x   <span class="comment">//illegal</span></span><br><span class="line">(<span class="keyword">string</span> x) =&gt; x * x <span class="comment">//legal</span></span><br><span class="line">x =&gt; x * x</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>沒有傳入參數時以空括號 <code>()</code> 表示</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">() =&gt; Console.WriteLine(<span class="string">"Hello Lambda"</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="expression"><a href="#expression" class="headerlink" title="expression"></a>expression</h4><ul>
+<li>只有單行程式碼時為 <code>expression</code> ，可以不用 <code>{}</code> 包住程式，程式行的最後也不用加 <code>;</code> ，其程式碼所代表的是回傳值</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x =&gt; x * x  <span class="comment">//delegate (int x) &#123; return x * x; &#125;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>expression</code> 格式的Lambda稱為Lambda運算式(Lambda Expressions)</li>
+</ul>
+<h4 id="block"><a href="#block" class="headerlink" title="block"></a>block</h4><ul>
+<li>一般的程式碼區塊，可以多行程式碼，每行最後要加 <code>;</code></li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x =&gt; &#123; <span class="keyword">return</span> x * x; &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>block</code> 格式的Lambda稱為Lambda陳述式(Lambda Statements)</li>
+</ul>
+<h3 id="一些小結論"><a href="#一些小結論" class="headerlink" title="一些小結論"></a>一些小結論</h3><p>今天介紹了委派，其實有點算是講古吧，但如果沒有基本觀念的話，直接使用也容易搞不懂在用什麼。上面也講過了，現在主流都是用 Lambda 了，尤其是操作 LINQ 時，幾乎每一句都是，所以 Lamda 是什麼，這邊也先告訴你了。</p>
+<p>Lambda 也可以在宣告方法時使用如</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add2num</span> (<span class="params"><span class="keyword">int</span> a, <span class="keyword">int</span> b</span>)</span> =&gt; a + b;</span><br></pre></td></tr></table></figure>
+
+<p>所以與其說是教委派，更多的是 Lambda 的使用，但如果沒有委派的觀念，使用起 Lambda 時總會卡手卡腳的。</p>
+<p>本來今天是想介紹泛型的，打到一半覺得還是先講委派好了，泛型後面接集合比較順，也可以不用再看一次類別。</p>
+<p>感謝閱讀。</p>
+<p>參考連結<br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/tour-of-csharp/delegates" target="_blank" rel="noopener">C# 委派 - C# 語言教學課程 | Microsoft Docs</a><br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/programming-guide/statements-expressions-operators/anonymous-methods" target="_blank" rel="noopener">匿名方法 (C# 程式設計手冊) | Microsoft Docs</a><br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions" target="_blank" rel="noopener">Lambda 運算式 (C# 程式設計手冊) | Microsoft Docs</a><br><a href="http://fecbob.pixnet.net/blog/post/41199941-c%23%E5%A7%94%E8%A8%97%E7%9A%84%E4%BB%8B%E7%B4%B9%28delegate%E3%80%81action%E3%80%81func%E3%80%81predicate%29" target="_blank" rel="noopener">C#委託的介紹(delegate、Action、Func、predicate) @ 資訊園 :: 痞客邦 ::</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/10/27/2018-10-27-learn-csharp-in-30-days-17/';
+var disqus_title = '.NET 後端起手式 30天認識 C# - Day 17 委派';
+var disqus_url = 'http://yoursite.com/2018/10/27/2018-10-27-learn-csharp-in-30-days-17/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

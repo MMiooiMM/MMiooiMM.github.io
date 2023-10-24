@@ -1,0 +1,83 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>C# 8.0 與未來 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2018-12-12</div></div></div><div class="container post-header"><h1>C# 8.0 與未來</h1></div><div class="container post-content"><p>昨天介紹了 C# 8.0 的新特性，但因為跟之前閱讀到的內容有出入，有些特性不在官方文件上面，才發現閱讀到的是 C# 8.0 與之後的更新內容。</p>
+<p>除了之後的更新內容外，若有特性的範例比較完善，我也會一併分享。</p>
+<h3 id="Async-streams"><a href="#Async-streams" class="headerlink" title="Async streams"></a>Async streams</h3><p>昨天有提到 IAsyncEnumerable<T> 為 IEnumerable<T> 的非同步版本。</p>
+<p>只有講到 foreach 在使用上的差異，而介面的實作為</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> enumerator = enumerable.GetAsyncEnumerator();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="keyword">while</span> (<span class="keyword">await</span> enumerator.MoveNextAsync ())&#123;</span><br><span class="line">    T item = enumerator.Current;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">await</span> enumerator.DisposeAsync ();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Target-typed-new-expressions"><a href="#Target-typed-new-expressions" class="headerlink" title="Target-typed new-expressions"></a>Target-typed new-expressions</h3><p>簡報的範例比較好懂，比官方文件容易了解新特性。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Triangle triangle = <span class="keyword">new</span> Triangle ();</span><br><span class="line"></span><br><span class="line">Dictionary&lt;<span class="keyword">string</span>, List&lt;<span class="keyword">int</span>&gt;&gt; field = <span class="keyword">new</span> Dictionary&lt;<span class="keyword">string</span>, List&lt;<span class="keyword">int</span>&gt;&gt; () &#123;</span><br><span class="line">  &#123;<span class="string">"item"</span>, <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt; () &#123; <span class="number">1</span> ,<span class="number">2</span>, <span class="number">3</span> &#125;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>可以取代成</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Triangle triangle = <span class="keyword">new</span> ();</span><br><span class="line"></span><br><span class="line">Dictionary&lt;<span class="keyword">string</span>, List&lt;<span class="keyword">int</span>&gt;&gt; field = <span class="keyword">new</span> () &#123;</span><br><span class="line">  &#123;<span class="string">"item"</span>, <span class="keyword">new</span> () &#123; <span class="number">1</span> ,<span class="number">2</span>, <span class="number">3</span> &#125;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>簡報雖然沒有特別說明，但官方文件無以下的內容，我猜是之後可能會更新的東西</strong></p>
+<h3 id="Enhanced-using-pattern-based-using"><a href="#Enhanced-using-pattern-based-using" class="headerlink" title="Enhanced using (pattern-based using)"></a>Enhanced using (pattern-based using)</h3><p>不是很懂這個特性有什麼功用，簡報上看來是可以不實作介面(IDisposable)，只實作成員(Dispose)就可以使用需要實作該介面成員的功能(using)。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Resoure</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Dispose</span> (<span class="params"></span>)</span> &#123; ... &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> (<span class="keyword">var</span> resoure = <span class="keyword">new</span> Resoure ()) &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>小提一下 using 算是 C# 的一個語法糖，可以幫你把 try-finally 語句縮短，舉個例子</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">StreamWriter sw = <span class="keyword">new</span> StreamWriter (path);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  sw.Write (<span class="string">"something"</span>);</span><br><span class="line">  &#125; </span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">  sw.Dispose ();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>經由 using 可寫成</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> (StreamWriter sw = <span class="keyword">new</span> StreamWriter (path)) &#123;</span><br><span class="line">  sw.Write (<span class="string">"something"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>編譯器出來的內容幾乎相等，也可以避免撰寫人員忘記釋放資源。</p>
+<h3 id="Null-coalescing-assignment"><a href="#Null-coalescing-assignment" class="headerlink" title="Null coalescing assignment"></a>Null coalescing assignment</h3><p>新的指派符號</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = x ?? y;</span><br></pre></td></tr></table></figure>
+
+<p>可以寫成</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x ??= y;</span><br></pre></td></tr></table></figure>
+
+<p><strong>簡報由此開始才是之後的內容</strong></p>
+<p>但上述的特性並無在 C# 8.0 的官方文件中，所以應該是簡報內容有誤，反正早晚會更新的，先看看也不差吧？</p>
+<h3 id="Negated-condition-if-statement"><a href="#Negated-condition-if-statement" class="headerlink" title="Negated-condition if statement"></a>Negated-condition if statement</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!(shape <span class="keyword">is</span> Triangle))) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以寫成以下幾種</p>
+<p>1.增加關鍵字 not</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (shape <span class="keyword">is</span> not Triangle) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.可以在括弧外增加 !</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> !(shape <span class="keyword">is</span> Triangle) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.新關鍵字 unless</p>
+<p>我覺得很難實現的一個新關鍵字，畢竟它不是保留字，如果開發人員使用這個字來當作變數，那後果可能滿慘的。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unless (shape <span class="keyword">is</span> Triangle) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Null-conditional-await"><a href="#Null-conditional-await" class="headerlink" title="Null-conditional await"></a>Null-conditional await</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(task == <span class="literal">null</span>) ? <span class="literal">null</span> : <span class="keyword">await</span> task;</span><br></pre></td></tr></table></figure>
+
+<p>可以寫成</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">await</span>! task;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Declaration-expressions"><a href="#Declaration-expressions" class="headerlink" title="Declaration expressions"></a>Declaration expressions</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> ch;</span><br><span class="line"><span class="keyword">while</span> ((ch = GetNextChar ()) == <span class="string">'a'</span> || ch == <span class="string">'b'</span>) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以寫成</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> ((<span class="keyword">char</span> ch = GetNextChar ()) == <span class="string">'a'</span> || ch == <span class="string">'b'</span>) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Dictionary-Literals"><a href="#Dictionary-Literals" class="headerlink" title="Dictionary Literals"></a>Dictionary Literals</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x = dictionary&lt;<span class="keyword">string</span>, <span class="keyword">int</span>&gt; () &#123;</span><br><span class="line">  &#123;<span class="string">"foo"</span>, <span class="number">0</span>&#125;,</span><br><span class="line">  &#123;<span class="string">"bar"</span>, <span class="number">1</span>&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以寫成</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x = [<span class="string">"foo"</span>: <span class="number">0</span>, <span class="string">"bar"</span>: <span class="number">1</span>];</span><br></pre></td></tr></table></figure>
+
+<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><p>沒有提到多重繼承的新特性，幾個月前有耳聞，但沒有在簡報內，不知道有沒有這回事。</p>
+<p>這就是目前已知道的 C# 8.0 與之後的發展。</p>
+<p>參考資料<br><br><a href="https://www.slideshare.net/fekberg1/c-8-and-beyond" target="_blank" rel="noopener">C# 8 and Beyond</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/12/12/2018-12-12-csharp-eight-point-zero-and-beyond/';
+var disqus_title = 'C# 8.0 與未來';
+var disqus_url = 'http://yoursite.com/2018/12/12/2018-12-12-csharp-eight-point-zero-and-beyond/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

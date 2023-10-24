@@ -1,0 +1,48 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>.NET 後端起手式 30天認識 C# - Day 16 類別(五) | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/2019-iT-%E9%82%A6%E5%B9%AB%E5%BF%99%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">2019 iT 邦幫忙鐵人賽</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a></div><div class="post-time">2018-10-26</div></div></div><div class="container post-header"><h1>.NET 後端起手式 30天認識 C# - Day 16 類別(五)</h1></div><div class="container post-content"><h2 id="DAY-16-類別-五"><a href="#DAY-16-類別-五" class="headerlink" title="DAY 16 類別(五)"></a>DAY 16 類別(五)</h2><h3 id="類別"><a href="#類別" class="headerlink" title="類別"></a>類別</h3><p>沒錯，又是類別，今天要來講隱含型別與匿名類別。</p>
+<h3 id="var"><a href="#var" class="headerlink" title="var"></a>var</h3><blockquote>
+<p>隱含型別區域變數如同您自己宣告的類型一樣是強型別，但是編譯器會判斷類型。</p>
+</blockquote>
+<p>至從會 var 後，我在宣告類型時就只用它了呢。</p>
+<p>簡單說就是它會自動判斷類別，無論是簡單類別、陣列又或者自定義類別等等的。因為是在編譯時期就決定好了，所以是強型別的變數，不會在執行時期發生型別相關問題，與之相反的是 dynamic，這是在執行時期才會決定型別，所以初學者在撰寫時容易發生不預期的錯誤。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> number = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">var</span> numberv = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">string</span> str = <span class="string">"Mio"</span>;</span><br><span class="line"><span class="keyword">var</span> strv = <span class="string">"Mio"</span>;</span><br><span class="line"><span class="keyword">int</span>[] arr = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">3</span>]&#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> &#125;;</span><br><span class="line"><span class="keyword">var</span> arrv = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">3</span>]&#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> &#125;;</span><br><span class="line">Coordinate c1 = <span class="keyword">new</span> Coordinate (<span class="number">12.156</span>m, <span class="number">7.195</span>m);</span><br><span class="line"><span class="keyword">var</span> cv = <span class="keyword">new</span> Coordinate (<span class="number">12.156</span>m, <span class="number">7.195</span>m);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 var 可以取代所有的類別名稱，超級好用，但為了讓初學者一開始先打好底，所以起初沒有去說明。有些很方便的東西，如果沒有基礎知識的話，很容易看不懂在寫啥毀，為什麼可以這樣寫等等。</p>
+<h3 id="匿名類型"><a href="#匿名類型" class="headerlink" title="匿名類型"></a>匿名類型</h3><blockquote>
+<p>匿名類型提供一個便利的方法，將一組唯讀屬性封裝成一個物件，而不需要事先明確定義類型。</p>
+</blockquote>
+<p>有了 var 我們才可以使用匿名類型，不然在明確定義類型前，沒有人知道是什麼類型。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> member = <span class="keyword">new</span> &#123; ID = <span class="number">0</span>, Name = <span class="string">"Mio"</span> &#125;;</span><br><span class="line">Console.WriteLine (member);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到印出來的東西跟昨天講的完全不一樣，因為匿名類型沒有類型名稱，所以編譯器會重寫 ToString() 方法，變成傳回 <code>PropertyName = value</code> 這樣的對照表。</p>
+<p>若是多筆資料的話</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> members = <span class="keyword">new</span> [] &#123; <span class="keyword">new</span> &#123; ID = <span class="number">0</span>, Name = <span class="string">"Mio"</span> &#125;, <span class="keyword">new</span> &#123; ID = <span class="number">1</span>, Name = <span class="string">"Miffy"</span> &#125; &#125;;</span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> member <span class="keyword">in</span> members) &#123;</span><br><span class="line">  Console.WriteLine (member);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>foreach 的變數也可以用 var 取代，但方法那種需要判斷型別的地方就不行，還有就是 array 裡面的所有類別都必須相同，否則會錯誤。</p>
+<p>若是有 array 成員的話</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> member = <span class="keyword">new</span> &#123; ID = <span class="number">0</span>, Names = <span class="keyword">new</span> <span class="keyword">string</span>[] &#123; <span class="string">"Mio"</span>, <span class="string">"Miffy"</span> &#125; &#125;;</span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> name <span class="keyword">in</span> member.Names) &#123;</span><br><span class="line">  Console.WriteLine (<span class="string">$"ID = <span class="subst">&#123;member.ID&#125;</span>, Name = <span class="subst">&#123;name&#125;</span>"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="一些小結論"><a href="#一些小結論" class="headerlink" title="一些小結論"></a>一些小結論</h3><p>var 有多好用我不用再說了，現在就可以把之前練習的程式碼全改成 var 了，但如果程式碼有出錯，我會建議你先把 var 改回成明確類型，會比較好偵錯。</p>
+<p>匿名類型基本上目前都還用不到，介紹後面的內容才會出現，現在先看過有個印象就好。</p>
+<p>感謝閱讀。</p>
+<p>參考連結<br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/language-reference/keywords/var" target="_blank" rel="noopener">var (C# 參考) | Microsoft Docs</a><br><a href="https://docs.microsoft.com/zh-tw/dotnet/csharp/programming-guide/classes-and-structs/anonymous-types" target="_blank" rel="noopener">匿名類型 (C# 程式設計手冊) | Microsoft Docs</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/10/26/2018-10-26-learn-csharp-in-30-days-16/';
+var disqus_title = '.NET 後端起手式 30天認識 C# - Day 16 類別(五)';
+var disqus_url = 'http://yoursite.com/2018/10/26/2018-10-26-learn-csharp-in-30-days-16/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

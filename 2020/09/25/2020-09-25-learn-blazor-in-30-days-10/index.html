@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 10 表單魔術 - 驗證技巧 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-25</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 10 表單魔術 - 驗證技巧</h1></div><div class="container post-content"><p>今天要來介紹的是表單的驗證，畢竟不可能讓每一份表單都交由後端來驗證並返還結果，往往都會由前端來排除最基本的使用者操作失誤，如說好密碼要大小寫與數字兼具，卻只給小寫加數字，又或者填寫日期時，結束日期在開始日期之前，諸如此類的問題。</p>
+<p>當然這並不是說後端不用”<strong>再</strong>“檢查，該做的事情還是要做，只是前端先阻擋最基本的錯誤，可以省下許多的 http 請求。所以今天要帶大家透過資料註解來撰寫簡單的畫面驗證，並且客製化自己的驗證。</p>
+<hr>
+<h3 id="資料註解-DataAnnotations"><a href="#資料註解-DataAnnotations" class="headerlink" title="資料註解(DataAnnotations)"></a>資料註解(DataAnnotations)</h3><p>又稱驗證屬性(Attribute)，可以讓你指定模型屬性(Property)的驗證規則。</p>
+<p>以下介紹幾個比較常用的驗證屬性：</p>
+<ul>
+<li><p><code>Required</code>: 該欄位為必填。</p>
+</li>
+<li><p><code>StringLength(int maximun)</code>: 該字串欄位長度限制，最小值是可選參數，建構式只要求最大值，以限制長度五到十的字串為例： </p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">StringLength(10, MinimumLength = 5)</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Range(int minimun, int maximun)</code>: 該數值欄位的範圍限制，以限制數字區間為一到兩百為例：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Range(1, 200)</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>RegularExpression(string pattern)</code>: 該欄位需符合特定的正規表達式，以簡單的台灣手機格式為例：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">RegularExpression(@<span class="meta-string">"^09\d&#123;8&#125;$"</span>)</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>EmailAddress</code>: 該欄位需為電子信箱格式。</p>
+</li>
+<li><p><code>Url</code>: 該欄位需為 URL 格式。</p>
+</li>
+</ul>
+<p>當然不只這些，想看完整的話可以到<a href="https://docs.microsoft.com/zh-tw/dotnet/api/system.componentmodel.dataannotations?view=netcore-3.1" target="_blank" rel="noopener">System.ComponentModel.DataAnnotations 命名空間</a>觀看。</p>
+<h3 id="建立自訂驗證屬性"><a href="#建立自訂驗證屬性" class="headerlink" title="建立自訂驗證屬性"></a>建立自訂驗證屬性</h3><p>若內建的驗證屬性無法達成你的需求時，我們可以建立自訂驗證屬性，只需要繼承 <code>ValidationAttribute</code> 並且覆寫 <code>IsValid</code> 方法即可。</p>
+<p><code>IsValid</code> 方法有兩種多載：<code>IsValid(object value)</code> 與 <code>IsValid(object value, ValidationContext validationContext)</code></p>
+<ul>
+<li><p><code>value</code> 該屬性的值。</p>
+</li>
+<li><p><code>validationContext</code> 驗證的上下文，並可以透過 <code>ObjectInstance</code> 取得驗證實例後取得其他欄位的值。</p>
+</li>
+</ul>
+<p>而我們，只需要根據情境覆寫一個方法即可，若兩個都覆寫，則 <code>IsValid(object value)</code> 會是失效的那個。</p>
+<p>客製化驗證通常都是針對不同欄位間對彼此的影響來決定驗證內容，而這邊就以一個簡單的例子說明，如果某欄位在某身分時必填，就可以寫成：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">override</span> ValidationResult <span class="title">IsValid</span>(<span class="params"><span class="keyword">object</span> <span class="keyword">value</span>, ValidationContext validationContext</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">var</span> user = (UserViewModel)validationContext.ObjectInstance;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (user.UserType == UserType.member &amp;&amp; (<span class="keyword">value</span> <span class="keyword">is</span> <span class="literal">null</span> || <span class="keyword">string</span>.IsNullOrEmpty(<span class="keyword">value</span>.ToString())))</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ValidationResult(<span class="keyword">base</span>.ErrorMessage ?? <span class="string">"此欄位會員必填！"</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> ValidationResult.Success;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這邊要提一點，我回傳錯誤訊息時，使用了<code>base.ErrorMessage ?? &quot;此欄位會員必填！&quot;</code>，讓外部使用時也能透過設定 <code>ValidationAttribute</code> 的 <code>ErrorMessage</code> 來客製化訊息，而所有的內建驗證屬性也都繼承於 <code>ValidationAttribute</code>，所以都能夠使用 <code>ErrorMessage</code> 屬性來客製化錯誤訊息，也就是：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">Required(ErrorMessage = <span class="meta-string">"此欄位為必填！"</span>)</span>]</span><br></pre></td></tr></table></figure>
+
+<p>當你撰寫好客製化驗證後，會發現(可能吧？)在顯示錯誤訊息時，明明在 <code>&lt;ValidationSummary /&gt;</code> 有正確顯示錯誤，而 <code>&lt;ValidationMessage For=&quot;@(()=&gt;model.PropertyName)&quot; /&gt;</code> 卻一點訊息都沒有！</p>
+<p>因為在傳回 <code>ValidationResult</code> 時，要指定是哪些屬性名稱的錯誤，否則就會對應不到，所以我們的傳回值應該是：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> ValidationResult(<span class="keyword">base</span>.ErrorMessage ?? <span class="string">"此欄位會員必填！"</span>, <span class="keyword">new</span>[] &#123; validationContext.MemberName &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>第二個參數是屬性名稱陣列，可以透過 <code>validationContext.MemberName</code> 來取得該屬性的名稱，若裡面放了別的屬性名稱，別的屬性就會出現同樣的錯誤，是不是很神奇呀？例如<strong>結束時間必需在開始時間之後</strong>這類訊息，往往都只能擺在一個屬性上，但其實對於使用者來說，調整兩個屬性的其中一個就好，也就是並非單一個錯誤，而是兩個都是錯誤才對吧？若想看此類驗證器，我有撰寫一個驗證器在<a href="https://github.com/MMiooiMM/learn-blazor-in-30-days-sample/commit/4e195c63d260568ed72c5859f1ee50959be80394" target="_blank" rel="noopener">範例程式碼 - Day10</a>。</p>
+<p>最後一點是，<code>IsValid(object value)</code> 的傳回值是 <code>bool</code>，而不是 <code>ValidationResult</code>，所以並無上述問題，且 <code>ValidationMessage</code> 能正確取得該屬性名稱的錯誤訊息。</p>
+<hr>
+<p>以上就是透過資料註解來進行資料驗證，與客製化驗證器的方法。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/mvc/models/validation?view=aspnetcore-3.1#built-in-attributes" target="_blank" rel="noopener">內建屬性</a><br><a href="https://github.com/microsoft/referencesource/tree/master/System.ComponentModel.DataAnnotations/DataAnnotations" target="_blank" rel="noopener">DataAnnotations</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/25/2020-09-25-learn-blazor-in-30-days-10/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 10 表單魔術 - 驗證技巧';
+var disqus_url = 'http://yoursite.com/2020/09/25/2020-09-25-learn-blazor-in-30-days-10/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

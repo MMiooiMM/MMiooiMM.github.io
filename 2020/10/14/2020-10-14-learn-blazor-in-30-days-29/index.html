@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 29 測試魔術 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-10-14</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 29 測試魔術</h1></div><div class="container post-content"><p>Blazor WebAssembly 新手入門會碰上的問題也講得差不多了，最後的最後我們來講講如何在 Blazor 中撰寫測試吧！</p>
+<hr>
+<p>為什麼要寫測試對於現在的時空背景來說，已經有太多文章撰寫了，如果不了解測試、不知道如何測試，可以先看看各大神的文章，解釋的一定比我還要詳細，看完覺得測試對你有幫助，再往下閱讀吧！</p>
+<p>官方並沒有提供 Blazor 的測試框架，現在主流都是使用社群專案(<a href="https://bunit.egilhansen.com/index.html" target="_blank" rel="noopener">bUnit</a>)來提供便利的 Blazor 單元測試所需要的元件，也因為來源於社群，所以微軟並不會支援與維護，完全倚賴社群。</p>
+<p>而使用 <a href="https://bunit.egilhansen.com/index.html" target="_blank" rel="noopener">bUnit</a> 前，是需要由測試框架來執行，所以先建立 <code>MSTest</code>、<code>NUnit</code>、<code>xUnit</code> 中的任何一個測試專案，如果你曾經寫過 .NET 的單元測試，選擇你熟悉的測試框架即可。</p>
+<p>然後安裝 <code>bunit</code> 套件即可撰寫 Blazor 測試，但因為 <code>bunit</code> 還在 beta 狀態，如果你是使用 Nuget 來安裝需要勾選「包括搶鮮版」，否則是看不到該套件的，撰文當下的版本號為 <code>1.0.0-beta-10</code>。</p>
+<p>如果你選擇的是 <code>xUnit</code> 你需要安裝 <code>bunit.web</code> 與 <code>bunit.xunit</code> 套件。</p>
+<p>如果你選擇的是 <code>NUnit</code> 與 <code>MSTest</code> 你只需要安裝 <code>bunit.web</code> 套件。</p>
+<p>這樣就可以來撰寫測試專案了，這邊我準備兩個簡單的測試範例，以昨天建立的 <code>Component1.razor</code> 來當作測試範本。</p>
+<ol>
+<li>測試元件的基本畫面：</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Arrange</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">var</span> ctx = <span class="keyword">new</span> TestContext();</span><br><span class="line"><span class="keyword">var</span> cut = ctx.RenderComponent&lt;Component1&gt;();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Act</span></span><br><span class="line"><span class="keyword">var</span> div = cut.Find(<span class="string">"div.my-component"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Assert</span></span><br><span class="line">div.MarkupMatches(<span class="string">"&lt;div class=\"my-component\"&gt;This Blazor component is defined in the &lt;strong&gt;Blazor30daysRCL&lt;/strong&gt; package.&lt;/div&gt;"</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>TestContext</code> 是用來創建受測元件的工廠，透過 <code>RenderComponent&lt;TComponent&gt;</code> 來實體化並執行 <code>TComponent</code> 組件的第一次渲染。</p>
+<p>這邊我使用 <code>Find(string cssSelector)</code> 來取得 <code>div.my-component</code> 元素，型別為 <code>IElement</code> 想要取得基本的元素成員或者執行任何事件都可以，最後透過 <code>MarkupMatches</code> 方法來比較兩邊的 HTML 是否一致。</p>
+<ol start="2">
+<li>測試服務呼叫 JSRuntime：</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Arrange</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">var</span> ctx = <span class="keyword">new</span> TestContext();</span><br><span class="line"><span class="keyword">var</span> mockJS = ctx.Services.AddMockJSRuntime();</span><br><span class="line">mockJS.SetupVoid(<span class="string">"exampleJsFunctions.showPrompt"</span>);</span><br><span class="line"><span class="keyword">var</span> JSRuntime = ctx.Services.GetService&lt;IJSRuntime&gt;();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Act</span></span><br><span class="line">ExampleJsInterop.Prompt(JSRuntime, <span class="string">"message"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Assert</span></span><br><span class="line">mockJS.VerifyInvoke(<span class="string">"exampleJsFunctions.showPrompt"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>這邊針對 <code>TestContext</code> 注入 <code>MockJSRuntime</code>，並透過 <code>SetupVoid(string identifier)</code> 修改呼叫識別碼為 <code>exampleJsFunctions.showPrompt</code> 時其傳回結果為空值，並以 <code>VerifyInvoke(string identifier)</code> 來判斷此識別碼是否被呼叫過，若要測試指定呼叫次數可以帶入第二個參數代表呼叫次數，若為不曾呼叫過則建議使用 <code>VerifyNotInvoke(string identifier)</code> 語意更清楚。</p>
+<hr>
+<p>以上就是簡單的測試撰寫介紹，測試也是一個很大的坑，現在網路上的資源也不多，畢竟是 blazor 的測試套件，而且還在 beta 階段，如果以後有機會再來好好分享。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/test?view=aspnetcore-3.1" target="_blank" rel="noopener">測試 ASP.NET Core Blazor 中的元件</a><br><a href="https://bunit.egilhansen.com/index.html" target="_blank" rel="noopener">bUnit</a><br><a href="https://github.com/egil/bUnit" target="_blank" rel="noopener">bUnit Github</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/10/14/2020-10-14-learn-blazor-in-30-days-29/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 29 測試魔術';
+var disqus_url = 'http://yoursite.com/2020/10/14/2020-10-14-learn-blazor-in-30-days-29/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

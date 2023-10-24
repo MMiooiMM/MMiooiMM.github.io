@@ -1,0 +1,62 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 25 環境魔術 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-10-10</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 25 環境魔術</h1></div><div class="container post-content"><p>昨天介紹組態時提到了環境設置，那麼今天就來介紹一下環境吧！</p>
+<hr>
+<p>昨天提到可以針對不同環境使用對應的組態檔，其檔名規則為 <code>appsetting.{environment}.json</code>，而預設開發環境為 <code>Development</code>，所以先建立 <code>wwwroot/appsettings.Development.json</code> 檔案吧，內容如：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// appsettings.Development.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"message"</span>: <span class="string">"Hello from dev config!"</span>,</span><br><span class="line">  <span class="attr">"test"</span>: &#123;</span><br><span class="line">    <span class="attr">"message"</span>: <span class="string">"Hello2 from dev config!"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然後就會發現本來的文字被替換成了 <code>Development</code> 版本，因為我們的環境變數為 <code>Development</code>，如果是用 Visual Studio 開發，想修改環境變數可以到<strong>專案/屬性</strong>，如下圖：</p>
+<p><img src="/images/2020-10-10/project-property.png" alt="/images/2020-10-10/project-property.png"></p>
+<p>然後選擇<strong>偵錯</strong>頁籤修改環境變數，如下圖：</p>
+<p><img src="/images/2020-10-10/project-environment.png" alt="/images/2020-10-10/project-environment.png"></p>
+<p>只要修改 <code>ASPNETCORE_ENVIRONMENT</code> 的值就會吃到該環境的組態檔，若組態檔不存在則會使用 <code>appsettings.json</code>，其實不管如何 <code>appsettings.json</code> 都會被載入，只是不會被優先使用。</p>
+<p>此外針對環境變數，我們也可以在執行時期取得當前環境，只需要透過命名空間為 <code>Microsoft.AspNetCore.Components.WebAssembly.Hosting</code> 的 <code>IWebAssemblyHostEnvironment</code> 物件，此物件提供了兩個屬性：</p>
+<ul>
+<li><p><code>Environment</code>：取得當前環境的名稱。</p>
+</li>
+<li><p><code>BaseAddress</code>：取得應用程式的基底地址。在應用程式啟動時，<code>NavigationManager</code> 服務是無效的，此時可以使用此屬性來代替，如啟動時注入 HTTP 服務時：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Program.cs</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> Task <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">var</span> builder = WebAssemblyHostBuilder.CreateDefault(args);</span><br><span class="line">  builder.RootComponents.Add&lt;App&gt;(<span class="string">"app"</span>);</span><br><span class="line">  builder.Services.AddScoped(sp =&gt; <span class="keyword">new</span> HttpClient &#123; BaseAddress = <span class="keyword">new</span> Uri(builder.HostEnvironment.BaseAddress) &#125;);</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>除此之外也提供下列便利的擴充方法讓我們檢查目前的環境是開發、生產、預備或者是自訂環境名稱：</p>
+<ul>
+<li><p><code>IsDevelopment()</code></p>
+</li>
+<li><p><code>IsProduction()</code></p>
+</li>
+<li><p><code>IsStaging()</code></p>
+</li>
+<li><p><code>IsEnvironment(&quot;{ENVIRONMENT NAME}&quot;)</code></p>
+</li>
+</ul>
+<p>使得我們開發的時候能夠針對環境執行特定邏輯，例如：</p>
+<p>在啟動時：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Program.cs</span></span><br><span class="line"><span class="keyword">if</span> (builder.HostEnvironment.IsDevelopment())</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在元件中：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// xxx.razor</span></span><br><span class="line">@<span class="keyword">using</span> Microsoft.AspNetCore.Components.WebAssembly.Hosting</span><br><span class="line">@inject IWebAssemblyHostEnvironment HostEnvironment</span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="keyword">if</span>(Environment.IsDevelopment())&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>以上就是環境的基本說明。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/fundamentals/environments?view=aspnetcore-3.1" target="_blank" rel="noopener">ASP.NET Core Blazor 環境</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/10/10/2020-10-10-learn-blazor-in-30-days-25/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 25 環境魔術';
+var disqus_url = 'http://yoursite.com/2020/10/10/2020-10-10-learn-blazor-in-30-days-25/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

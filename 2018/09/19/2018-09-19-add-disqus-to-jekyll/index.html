@@ -1,0 +1,41 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>使用 Disqus 在 Jekyll 增加留言區塊 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Jekyll/" rel="tag">Jekyll</a></div><div class="post-time">2018-09-19</div></div></div><div class="container post-header"><h1>使用 Disqus 在 Jekyll 增加留言區塊</h1></div><div class="container post-content"><p>Github page 是靜態頁面生成的，所以無法動態存取網頁，若想要有一個留言區塊，就必須使用外部插件。</p>
+<p>本來也因為留言功能的問題，有點猶豫要不要在 Github page 寫文章，但現在解決了 :)</p>
+<p>Github page 的好處有只要會用 git 指令，即使其他電腦沒有裝 ruby 等程式，也能透過 md 檔案的新增去發表文章、幫你弄個 https、免費等等。</p>
+<p>廢話也不多說，馬上進入正題。</p>
+<p>首先，當然是去 <a href="https://disqus.com/" target="_blank" rel="noopener">disqus 官網</a>申請一個帳號啦。</p>
+<p>創建細節就不多提了，直接講 Jekyll 的部分。</p>
+<p>如果你是照著我流程去寫的話，你會在<code>_includes</code>找到<code>dispus_comments.html</code>檔案。</p>
+<p>對，他預設就有幫你設想你可能會用到 Disqus 了。</p>
+<p>所以你需要的就是在每一篇文章都需要用到的頁面增加留言功能。</p>
+<p>留言功能及畫面由 Disqus 的 embed.js 提供，你只需要把這一段程式碼加到<code>post.html</code>即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; &#39;&#123;% if page.comments %&#39; &#125;&#125;&#125;</span><br><span class="line">  &lt;div id&#x3D;&quot;disqus_thread&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">    &lt;script type&#x3D;&quot;text&#x2F;javascript&quot;&gt;</span><br><span class="line">      &#x2F;* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * *&#x2F;</span><br><span class="line">      var disqus_shortname &#x3D; &#39;mio-blog&#39;; &#x2F;&#x2F; required: replace example with your forum shortname</span><br><span class="line">      &#x2F;&#x2F; var disqus_developer &#x3D; 1; &#x2F;&#x2F; Comment out when the site is live</span><br><span class="line">      var disqus_identifier &#x3D; &quot;&#123;&#123; &#39;&#123;&#123; page.url &#39; &#125;&#125;&#125;&#125;&quot;;</span><br><span class="line"></span><br><span class="line">      &#x2F;* * * DON&#39;T EDIT BELOW THIS LINE * * *&#x2F;</span><br><span class="line">      (function() &#123;</span><br><span class="line">        var dsq &#x3D; document.createElement(&#39;script&#39;); </span><br><span class="line">        dsq.type &#x3D; &#39;text&#x2F;javascript&#39;; </span><br><span class="line">        dsq.async &#x3D; true;</span><br><span class="line">        dsq.src &#x3D; &#39;&#x2F;&#x2F;&#39; + disqus_shortname + &#39;.disqus.com&#x2F;embed.js&#39;;</span><br><span class="line">        (document.getElementsByTagName(&#39;head&#39;)[0] || document.getElementsByTagName(&#39;body&#39;)[0]).appendChild(dsq);</span><br><span class="line">      &#125;)();</span><br><span class="line">    &lt;&#x2F;script&gt;</span><br><span class="line">    &lt;noscript&gt;Please enable JavaScript to view the &lt;a href&#x3D;&quot;http:&#x2F;&#x2F;disqus.com&#x2F;?ref_noscript&quot;&gt;comments powered by Disqus.&lt;&#x2F;a&gt;&lt;&#x2F;noscript&gt;</span><br><span class="line">    &lt;a href&#x3D;&quot;http:&#x2F;&#x2F;disqus.com&quot; class&#x3D;&quot;dsq-brlink&quot;&gt;comments powered by &lt;span class&#x3D;&quot;logo-disqus&quot;&gt;Disqus&lt;&#x2F;span&gt;&lt;&#x2F;a&gt;</span><br><span class="line">&#123;&#123; &#39;&#123;% endif %&#39; &#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>將我的 mio-blog 替換成你建立的網站名稱就可以了。</p>
+<p>還有一點是，注意這段程式碼如果要運行，有一個條件是<code>if page.comments</code>，所以需要在想要開啟留言功能的頁面加入<code>comments: true</code>，在文章的屬性裡。</p>
+<p>如果你需要顯示文章評論數的功能，下方的參考資料也有教學可以自行去看。</p>
+<h3 id="小心地雷"><a href="#小心地雷" class="headerlink" title="小心地雷"></a>小心地雷</h3><p>如果你要使用 Disqus 的話，請注意一點，第一次跑 JS 檔案時，請務必在正式環境，不然該文章的連結地點會在<code>http://127.0.0.1:4000/*</code>。</p>
+<p>也因為這樣所以再使用範例程式時，請務必更改網站名稱，不然評論區會到我的網站去，麻煩了。</p>
+<h4 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h4><p>發現網路上的解法都已經過時了，現在能直接編輯了，超棒。</p>
+<p>首先進入<a href="https://disqus.com/" target="_blank" rel="noopener">管理後台</a>，點選 Moderate Comments，左列選單中找到 TOOLS 後點選 Discussions，然後編輯你的 link 即可。</p>
+<p>參考文章<br><br><a href="https://www.perfectlyrandom.org/2014/06/29/adding-disqus-to-your-jekyll-powered-github-pages/" target="_blank" rel="noopener">Adding Disqus to your Jekyll</a><br><br><a href="https://blog.michiru.me/post/disqus-is-back/" target="_blank" rel="noopener">让人超烦躁的 Disqus</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2018/09/19/2018-09-19-add-disqus-to-jekyll/';
+var disqus_title = '使用 Disqus 在 Jekyll 增加留言區塊';
+var disqus_url = 'http://yoursite.com/2018/09/19/2018-09-19-add-disqus-to-jekyll/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

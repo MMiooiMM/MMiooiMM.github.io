@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 12 表單魔術 - 資料繫結與事件處理技巧 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-09-27</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 12 表單魔術 - 資料繫結與事件處理技巧</h1></div><div class="container post-content"><p>畫面元件與我們的模型物件該如何綁定，才能在使用者更改欄位內容時，同步修改模型物件的對應屬性？並且當使用者操作畫面元件時，如何捕捉元件發出的事件？今天要帶大家認識的是<strong>資料繫結</strong>與<strong>事件處理</strong>，透過這兩種處理來能讓表單正確的與使用者互動。</p>
+<hr>
+<h3 id="資料繫結"><a href="#資料繫結" class="headerlink" title="資料繫結"></a>資料繫結</h3><p>透過 <code>@bind</code> 指示詞屬性來將指定的欄位、屬性或 <code>razor</code> 的運算式值繫結到 HTML 元素屬性上，使用方式為：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;input @bind=<span class="string">"currentValue"</span> /&gt;</span><br><span class="line"></span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">string</span> currentValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>當元素失去焦點時，就會自動更新欄位值，因為透過 <code>@bind</code> 來繫結時，會將表達式的當前值 <code>currentValue</code> 與 HTML <code>value</code> 屬性關聯，並使用已註冊的事件處理來修改內容，也就等同於以下：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;input <span class="keyword">value</span>=<span class="string">"@currentValue"</span> </span><br><span class="line">  @onchange=<span class="string">"@((ChangeEventArgs __e) =&gt; currentValue = __e.Value.ToString())"</span> /&gt;</span><br><span class="line"></span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">string</span> currentValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以只有當 <code>onchange</code> 事件觸發時，才會變更欄位值，但如果想要增加事件，可以使用 <code>@bind:event</code> 來增加變更的時間點：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;input @bind=<span class="string">"currentValue"</span> @bind:<span class="keyword">event</span>=<span class="string">"oninput"</span> /&gt;</span><br><span class="line"></span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">string</span> currentValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這樣一來也會同時註冊預設的 <code>oninput</code> 事件處理，但如果預設的事件不能滿足你的需求，那麼就需要自己來撰寫事件處理了。</p>
+<p>但你可能會發現昨天使用的範例程式碼並不是使用 <code>@bind</code> 來綁定屬性，而是 <code>@bind-Value</code> 來綁定這又是為什麼？那是因為昨天使用的元件是內建輸入元件而不是原生的 input 元件，所以我們綁定的對象是子元件的 <code>Value</code> 屬性，針對父子傳值這部分將會在介紹<strong>客製化元件</strong>時再詳細說明，這邊有個概念就好。</p>
+<h3 id="事件處理"><a href="#事件處理" class="headerlink" title="事件處理"></a>事件處理</h3><p>透過 <code>@on{Event}</code> 指示詞屬性來綁定 HTML 元素的事件，像是點擊、輸入等等，以點擊事件為範例為：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;button <span class="keyword">class</span>=<span class="string">"btn btn-primary"</span> @onclick=<span class="string">"SayHello"</span>&gt;</span><br><span class="line">  Say hello</span><br><span class="line">&lt;/button&gt;</span><br><span class="line">@code &#123;</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">SayHello</span>(<span class="params">MouseEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>  &#123;</span><br><span class="line">    Console.WriteLine(<span class="string">"Hello!"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>點擊時會在 <code>Console</code> 視窗上輸出 <code>Hello</code>，事件處理也可以是非同步的且傳回 <code>Task</code>，只需要調整事件處理的方法就好如：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">async</span> Task <span class="title">SayHello</span>(<span class="params">MouseEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  Console.WriteLine(<span class="string">"Hello!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而方法參數型別為 <code>MouseEventArgs</code>，屬於事件引數類型，每一種事件都能對應到特定的類型，因為真的太多了，這邊就不列舉，請自行到<a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/components/event-handling?view=aspnetcore-3.1#event-argument-types" target="_blank" rel="noopener">事件引數類型</a>觀看。</p>
+<p>在處理事件時，往往都會需要特定資料，以 <code>MouseEventArgs</code> 為例，就提供了事件當下</p>
+<ol>
+<li>滑鼠的座標</li>
+<li>事件類別，因為點擊、按下、放開等等事件都是共用此類型，所以需要標明當下的事件類別。</li>
+<li>是否按著 <code>alt</code>, <code>ctrl</code> 與 <code>shift</code> 鍵</li>
+</ol>
+<p>等等資訊，以方便針對每一種情境下的處理邏輯。</p>
+<p>而除了透過方法來綁定外，也可以使用 lambda 運算式：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;button @onclick=<span class="string">"@(e =&gt; Console.WriteLine("</span>Hello, world!<span class="string">"))"</span>&gt;Say hello&lt;/button&gt;</span><br></pre></td></tr></table></figure>
+
+<p>使用時也跟第七天的建議一樣，用 <code>foreach</code> 來取代 <code>for</code>，避免在 lambda 運算式中使用迴圈變數，否則會導致所有的 lambda 使用了相同的值，但如果堅持使用 for，可以將迴圈變數指派給區域變數以避免此問題。</p>
+<p>最後，講到 HTML 事件處理，就不能缺少兩個阻擋行為：</p>
+<ol>
+<li><p><strong>防止預設動作</strong>：透過 <code>@on{EVENT}:preventDefault</code> 指示詞屬性可以防止預設動作。因為除了你自己寫的事件處理，元素也有自己的預設動作，當預設動作會影響我們的業務邏輯時，這就派上用場了。</p>
+</li>
+<li><p><strong>停止事件傳播</strong>：透過 <code>on{Event}:stopPropagation</code> 指示詞屬性可以停止事件傳播。因為 HTML 元素具有<strong>事件冒泡</strong>機制，簡單說就是當你觸發子層某事件時，父層相同事件也會被觸發，而導致預期外的事件產生，就能使用它來避免了。</p>
+</li>
+</ol>
+<hr>
+<p>以上就是元件的資料繫結與事件處理。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/components/data-binding?view=aspnetcore-3.1" target="_blank" rel="noopener">ASP.NET Core Blazor 資料系結</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/09/27/2020-09-27-learn-blazor-in-30-days-12/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 12 表單魔術 - 資料繫結與事件處理技巧';
+var disqus_url = 'http://yoursite.com/2020/09/27/2020-09-27-learn-blazor-in-30-days-12/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>

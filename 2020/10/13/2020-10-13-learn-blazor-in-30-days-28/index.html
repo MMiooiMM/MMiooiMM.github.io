@@ -1,0 +1,47 @@
+<!DOCTYPE html><html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:title" content="MMiooiMM"><meta property="og:description" content="你好，我是米歐，歡迎來到我的部落格:)"><meta property="og:image" content="https://raw.githubusercontent.com/MMiooiMM/MMiooiMM.github.io/master/images/VeryImportantFile.jpg"><title>大內魔術 Blazor - 誰說前端一定要寫JS - Day 28 元件類別庫魔術 | MMiooiMM</title><link rel="stylesheet" type="text/css" href="/css/normalize.css"><link rel="stylesheet" type="text/css" href="/css/highlight.css"><link rel="stylesheet" type="text/css" href="/css/font.css"><link rel="stylesheet" type="text/css" href="/css/noise.css"><link rel="stylesheet" type="text/css" href="/css/mio.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><meta name="generator" content="Hexo 4.2.1"></head><body><article class="wrapper"><div class="post-main"><div class="nav"><nav class="container"><a class="sidebar-nav-item active" href="/">Home</a><a class="sidebar-nav-item" href="/archives">Archives</a><a class="sidebar-nav-item" href="/about">About</a></nav><div class="container post-meta"><div class="post-tags"><a class="post-tag-link" href="/tags/Blazor/" rel="tag">Blazor</a><a class="post-tag-link" href="/tags/CSharp/" rel="tag">CSharp</a><a class="post-tag-link" href="/tags/%E7%AC%AC-12-%E5%B1%86-iThome-%E9%90%B5%E4%BA%BA%E8%B3%BD/" rel="tag">第 12 屆 iThome 鐵人賽</a></div><div class="post-time">2020-10-13</div></div></div><div class="container post-header"><h1>大內魔術 Blazor - 誰說前端一定要寫JS - Day 28 元件類別庫魔術</h1></div><div class="container post-content"><p>今天要來介紹如何將自己撰寫的元件包成元件類別庫，並提供給 Blazor Server 與 Blazor WebAssembly 使用，並以 <a href="https://www.matblazor.com/" target="_blank" rel="noopener">MatBlazor</a> 來示範如何使用別人的元件類別庫。</p>
+<hr>
+<p>要建立 Blazor Server 與 Blazor WebAssembly 都能使用的元件類別庫我們需要建立 Razor 類別庫(RCL)。</p>
+<p><img src="/images/2020-10-13/select-rcl.png" alt="/images/2020-10-13/select-rcl.png"></p>
+<p>注意別勾選到 Support 頁面與檢視，否則你的範本專案會跟我文章的內容差別很大。</p>
+<p><img src="/images/2020-10-13/do-not-check-support-page-and-view.png" alt="/images/2020-10-13/do-not-check-support-page-and-view.png"></p>
+<p>建立完成後你會得到下面的專案架構。</p>
+<p><img src="/images/2020-10-13/rcl-structure.png" alt="/images/2020-10-13/rcl-structure.png"></p>
+<p>雖然範本提供了 <code>JavaScript</code> 檔與相關的服務，卻沒有在 <code>Component1.razor</code> 中使用，所以我們修改一下範本來讓該服務能被使用如：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@* Component1.razor *@</span><br><span class="line">@inject Microsoft.JSInterop.IJSRuntime JSRuntime</span><br><span class="line">&lt;div <span class="keyword">class</span>=<span class="string">"my-component"</span>&gt;</span><br><span class="line">    This Blazor component <span class="keyword">is</span> defined <span class="keyword">in</span> the &lt;strong&gt;Blazor30daysRCL&lt;/strong&gt; package.</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;button @onclick=<span class="string">"@(()=&gt;ExampleJsInterop.Prompt(JSRuntime, "</span>Prompt...<span class="string">"))"</span>&gt;Click ME&lt;/button&gt;</span><br></pre></td></tr></table></figure>
+
+<p>這樣就完成一個擁有自定義 css 與 js 且有一個元件能使用的 RCL 了，回到主專案並參考 RCL 專案後，我們就可以呼叫該專案下的所有類別了，如果不想重複寫命名空間，記得在 <code>_imports.razor</code> 引用命名空間即可。</p>
+<p>但會發現使用 <code>Component1.razor</code> 時會發生找不到對應的 css 與 js 檔的錯誤，此時我們只需要在 <code>index.html</code> 載入相對的 css 與 js 檔即可，而其目錄為 <code>_content/{project name}/</code> 就會對應到該專案的 <code>wwwroot/</code> 目錄如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--index.html--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"_content/Blazor30daysRCL/styles.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"_content/Blazor30daysRCL/exampleJsInterop.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>Blazor30daysRCL</code> 是我的 RCL 專案名稱。</p>
+<p>這樣就完成 RCL 建立與使用方式了，是不是很簡單呢？建立完後也可以推送到 Nuget 或者公司內部的套件平台供大家使用。</p>
+<p>最後簡單的介紹一下 <a href="https://www.matblazor.com/" target="_blank" rel="noopener">MatBlazor</a>，雖然並非官方提供，但屬於 MIT 授權，如果是畫面苦手或者是想參考別人如何客製化元件，推薦你參考這個 repo(<a href="https://github.com/SamProf/MatBlazor/tree/master/src" target="_blank" rel="noopener">MatBlazor Github</a>)。</p>
+<p>使用方式很簡單，從 Nuget 上面下載，也可以輸入 <code>Install-Package MatBlazor</code> 或 <code>dotnet add package MatBlazor</code> 安裝，使用時別忘了剛剛提到的 css 與 js 檔案的參考方式，在 <code>index.html</code> 合適的地方補上：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"_content/MatBlazor/dist/matBlazor.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">"_content/MatBlazor/dist/matBlazor.css"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>這樣就可以使用第三方套件了！至於 <a href="https://www.matblazor.com/" target="_blank" rel="noopener">MatBlazor</a> 元件的介紹與元件的設計技巧，有機會的話再分享囉。</p>
+<hr>
+<p>以上就是建立 RCL 與使用 RCL 的方式，一樣有簡單的<a href="https://github.com/MMiooiMM/learn-blazor-in-30-days-sample/commit/f369b6f2c575289e3bdacdf058bd7550de9c241a" target="_blank" rel="noopener">範本程式碼 - Day28</a>。</p>
+<p>感謝大家的閱讀，我們明天見。</p>
+<p>參考資料<br><a href="https://docs.microsoft.com/zh-tw/aspnet/core/blazor/components/class-libraries?view=aspnetcore-3.1&tabs=visual-studio" target="_blank" rel="noopener">ASP.NET Core Razor 元件類別庫</a><br><a href="https://www.matblazor.com/" target="_blank" rel="noopener">MatBlazor</a><br><a href="https://github.com/SamProf/MatBlazor/tree/master/src" target="_blank" rel="noopener">MatBlazor Github</a></p>
+</div></div><div class="post-main post-comment"><div id="disqus_thread"></div><script type="text/javascript">
+var disqus_shortname = 'mio-blog';
+var disqus_identifier = '2020/10/13/2020-10-13-learn-blazor-in-30-days-28/';
+var disqus_title = '大內魔術 Blazor - 誰說前端一定要寫JS - Day 28 元件類別庫魔術';
+var disqus_url = 'http://yoursite.com/2020/10/13/2020-10-13-learn-blazor-in-30-days-28/';
+(function() {
+   var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+   dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" target="_blank" rel="noopener" class="dsq-brlink">Blog comments powered by <span class="logo-disqus">Disqus</span></a></div></article><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.css"><script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script><script src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js"></script><script>$(document).ready(function() {
+  $(".fancybox").fancybox();
+});
+</script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-156431110-1');ga('send','pageview');</script></body></html>
